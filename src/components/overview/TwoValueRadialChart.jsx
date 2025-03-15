@@ -90,7 +90,7 @@ const CategoryDistributionChart = ({
                         className="w-4 h-4 rounded-full"
                         style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
-                    <span className="text-gray-200">{item.name}</span>
+                    <span className="text-gray-200 text-sm">{item.name}</span>
                 </div>
             ))}
         </div>

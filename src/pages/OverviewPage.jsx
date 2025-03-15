@@ -15,8 +15,8 @@ const Infractions = [
 ];
 
 const trafficCongested = [
-  { name: "Conjested Road", value: 82 },
-  { name: "Not Conjested Road", value: 108 },
+  { name: "Congested Road", value: 82 },
+  { name: "Non Congested Road", value: 108 },
 ];
 
 const EChalan = [
@@ -31,7 +31,7 @@ const Potholes = [
 
 const ParkingVaiolations = [
   { name: "Pending", value: 6 },
-  { name: "Issues", value: 24 },
+  { name: "Issued", value: 24 },
 ];
 
 const _innerRadius = 20;
