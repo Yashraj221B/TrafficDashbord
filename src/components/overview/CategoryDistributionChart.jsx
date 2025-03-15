@@ -1,17 +1,33 @@
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-
-const categoryData = [
-	{ name: "Electronics", value: 4500 },
-	{ name: "Clothing", value: 3200 },
-	{ name: "Home & Garden", value: 2800 },
-	{ name: "Books", value: 2100 },
-	{ name: "Sports & Outdoors", value: 1900 },
-];
+import { useState } from "react";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
-const CategoryDistributionChart = () => {
+const CategoryDistributionChart = ({ 
+	categoryData, 
+	innerRadius = 60, 
+	outerRadius = 80,
+	height = 320,
+	name = 'Pie Chart' 
+}) => {
+	const [showAllLabels, setShowAllLabels] = useState(true);
+
+	const getLargestValue = () => {
+		return categoryData.reduce((max, item) => 
+			item.value > max.value ? item : max
+		, categoryData[0]);
+	};
+
+	const renderLabel = ({ name, percent }) => {
+		if (showAllLabels) {
+			return `${(percent * 100).toFixed(0)}%`;
+		}
+		return null;
+	};
+
+	const largestValue = getLargestValue();
+
 	return (
 		<motion.div
 			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700'
@@ -19,24 +35,46 @@ const CategoryDistributionChart = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.3 }}
 		>
-			<h2 className='text-lg font-medium mb-4 text-gray-100'>Category Distribution</h2>
-			<div className='h-80'>
+			<div className="flex justify-between items-center mb-4">
+				<h2 className='text-lg font-medium text-gray-100'>{name}</h2>
+				<button 
+					onClick={() => setShowAllLabels(!showAllLabels)}
+					className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-md text-gray-100"
+				>
+					{showAllLabels ? 'Hide Labels' : 'Show Labels'}
+				</button>
+			</div>
+			<div style={{ height }}>
 				<ResponsiveContainer width={"100%"} height={"100%"}>
 					<PieChart>
 						<Pie
 							data={categoryData}
 							cx={"50%"}
 							cy={"50%"}
-							labelLine={false}
-							outerRadius={80}
-							fill='#8884d8'
+							labelLine={showAllLabels}
+							innerRadius={innerRadius}
+							outerRadius={outerRadius}
+							fill='#2884d8'
 							dataKey='value'
-							label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+							label={renderLabel}
 						>
 							{categoryData.map((entry, index) => (
 								<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
 							))}
 						</Pie>
+						{!showAllLabels && (
+	<text
+		x="50%"
+		y="50%"
+		textAnchor="middle"
+		dominantBaseline="middle"
+		fill="white" // Add this line to make the text white
+		fontSize="20" // Optional: add this to make the text larger
+	>
+		{``}
+	</text>
+)}
+
 						<Tooltip
 							contentStyle={{
 								backgroundColor: "rgba(31, 41, 55, 0.8)",
@@ -44,11 +82,17 @@ const CategoryDistributionChart = () => {
 							}}
 							itemStyle={{ color: "#E5E7EB" }}
 						/>
-						<Legend />
+						<Legend
+							align="right"
+							verticalAlign="middle"
+							layout="vertical"
+							iconType="circle"
+						/>
 					</PieChart>
 				</ResponsiveContainer>
 			</div>
 		</motion.div>
 	);
 };
-export default CategoryDistributionChart;
+
+export default CategoryDistributionChart

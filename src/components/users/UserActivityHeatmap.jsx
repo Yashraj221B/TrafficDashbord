@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { motion } from "framer-motion";
 
+//Show Volunteers activity by the 14 Divisoon
 const userActivityData = [
 	{ name: "Mon", "0-4": 20, "4-8": 40, "8-12": 60, "12-16": 80, "16-20": 100, "20-24": 30 },
 	{ name: "Tue", "0-4": 30, "4-8": 50, "8-12": 70, "12-16": 90, "16-20": 110, "20-24": 40 },
@@ -19,7 +20,7 @@ const UserActivityHeatmap = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.4 }}
 		>
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>User Activity Heatmap</h2>
+			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Volunteers Activity Heatmap</h2>
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>
 					<BarChart data={userActivityData}>

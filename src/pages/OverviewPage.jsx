@@ -3,12 +3,49 @@ import { motion } from "framer-motion";
 
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
-import SalesOverviewChart from "../components/overview/SalesOverviewChart";
+import LineGraph from "../components/overview/lineGraph";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import SalesChannelChart from "../components/overview/SalesChannelChart";
 
+import Sidebar from "../components/common/Sidebar";
+
+const Infractions = [
+	{ name: "Congestions", value: 4500 },
+	{ name: "Broken traffic lights", value: 3200 },
+	{ name: "Potholes", value: 2800 },
+	{ name: "Imporper Number Plates", value: 2100 },
+	{ name: "Parking Violations", value: 1900 },
+];
+
+const trafficCongested = [
+	{ name: "Conjested Road", value: 82 },
+	{ name: "Not Conjested Road", value: 108 },
+]
+
+const EChalan = [
+	{ name: "Paid", value: 20 },
+	{ name: "Pending", value: 14 },
+]
+
+const Potholes = [
+	{ name: "Pending", value: 20 },
+	{ name: "Reported", value: 128 },
+]
+
+const ParkingVaiolations = [
+	{ name: "Pending", value: 6 },
+	{ name: "Issues", value: 24 },
+]
+
 const OverviewPage = () => {
-	return (
+		return (
+			<div  className='flex h-screen bg-gray-900 text-gray-100 overflow-hidden'>
+
+	<div className='fixed inset-0 z-0'>
+					<div className='absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-80' />
+					<div className='absolute inset-0 backdrop-blur-sm' />
+				</div>
+			<Sidebar />
 		<div className='flex-1 overflow-auto relative z-10'>
 			<Header title='Overview' />
 
@@ -20,20 +57,21 @@ const OverviewPage = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 1 }}
 				>
-					<StatCard name='Total Sales' icon={Zap} value='$12,345' color='#6366F1' />
-					<StatCard name='New Users' icon={Users} value='1,234' color='#8B5CF6' />
-					<StatCard name='Total Products' icon={ShoppingBag} value='567' color='#EC4899' />
-					<StatCard name='Conversion Rate' icon={BarChart2} value='12.5%' color='#10B981' />
+					<CategoryDistributionChart name={"Congestion"} categoryData={trafficCongested} innerRadius={10} outerRadius={20} height={100}/>
+					<CategoryDistributionChart name={"E-Chalan"} categoryData={EChalan} innerRadius={10} outerRadius={20} height={100}/>
+					<CategoryDistributionChart name={"Potholes"} categoryData={Potholes} innerRadius={10} outerRadius={20} height={100}/>
+					<CategoryDistributionChart name={"Parking"} categoryData={ParkingVaiolations} innerRadius={10} outerRadius={20} height={100}/>
 				</motion.div>
 
 				{/* CHARTS */}
 
 				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-					<SalesOverviewChart />
-					<CategoryDistributionChart />
+					<LineGraph name={"Infractions"}/>
+					<CategoryDistributionChart categoryData={Infractions} name={"Infractions"}/>
 					<SalesChannelChart />
 				</div>
 			</main>
+		</div>
 		</div>
 	);
 };

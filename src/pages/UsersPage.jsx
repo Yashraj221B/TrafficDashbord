@@ -8,6 +8,8 @@ import UserGrowthChart from "../components/users/UserGrowthChart";
 import UserActivityHeatmap from "../components/users/UserActivityHeatmap";
 import UserDemographicsChart from "../components/users/UserDemographicsChart";
 
+import Sidebar from "../components/common/Sidebar";
+
 const userStats = {
 	totalUsers: 152845,
 	newUsersToday: 243,
@@ -17,8 +19,16 @@ const userStats = {
 
 const UsersPage = () => {
 	return (
+		
+		<div  className='flex h-screen bg-gray-900 text-gray-100 overflow-hidden'>
+
+		<div className='fixed inset-0 z-0'>
+						<div className='absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-80' />
+						<div className='absolute inset-0 backdrop-blur-sm' />
+					</div>
+				<Sidebar />
 		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title='Users' />
+			<Header title='Volunteers' />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
 				{/* STATS */}
@@ -29,19 +39,19 @@ const UsersPage = () => {
 					transition={{ duration: 1 }}
 				>
 					<StatCard
-						name='Total Users'
+						name='Total Volunteers'
 						icon={UsersIcon}
 						value={userStats.totalUsers.toLocaleString()}
 						color='#6366F1'
 					/>
-					<StatCard name='New Users Today' icon={UserPlus} value={userStats.newUsersToday} color='#10B981' />
+					<StatCard name='New Volunteers Today' icon={UserPlus} value={userStats.newUsersToday} color='#10B981' />
 					<StatCard
-						name='Active Users'
+						name='Active Volunteers'
 						icon={UserCheck}
 						value={userStats.activeUsers.toLocaleString()}
 						color='#F59E0B'
 					/>
-					<StatCard name='Churn Rate' icon={UserX} value={userStats.churnRate} color='#EF4444' />
+					<StatCard name='Volunteers left' icon={UserX} value={userStats.churnRate} color='#EF4444' />
 				</motion.div>
 
 				<UsersTable />
@@ -53,6 +63,7 @@ const UsersPage = () => {
 					<UserDemographicsChart />
 				</div>
 			</main>
+		</div>
 		</div>
 	);
 };
