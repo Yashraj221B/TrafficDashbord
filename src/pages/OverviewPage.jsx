@@ -4,7 +4,7 @@ import Header from "../components/common/Header";
 import LineGraph from "../components/overview/lineGraph";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import SalesChannelChart from "../components/overview/SalesChannelChart";
-
+import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
 
 const Infractions = [
   { name: "Congestions", value: 4500 },
@@ -34,6 +34,8 @@ const ParkingVaiolations = [
   { name: "Issues", value: 24 },
 ];
 
+const _innerRadius = 20;
+const _outerRadius = 35;
 const OverviewPage = () => {
   return (
     <div className="flex-1 overflow-auto relative z-10">
@@ -47,32 +49,32 @@ const OverviewPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <CategoryDistributionChart
+          <TwoValueRadialChart
             name={"Congestion"}
             categoryData={trafficCongested}
-            innerRadius={10}
-            outerRadius={20}
+            innerRadius={_innerRadius}
+            outerRadius={_outerRadius}
             height={100}
           />
-          <CategoryDistributionChart
+          <TwoValueRadialChart
             name={"E-Chalan"}
             categoryData={EChalan}
-            innerRadius={10}
-            outerRadius={20}
+            innerRadius={_innerRadius}
+            outerRadius={_outerRadius}
             height={100}
           />
-          <CategoryDistributionChart
+          <TwoValueRadialChart
             name={"Potholes"}
             categoryData={Potholes}
-            innerRadius={10}
-            outerRadius={20}
+            innerRadius={_innerRadius}
+            outerRadius={_outerRadius}
             height={100}
           />
-          <CategoryDistributionChart
+          <TwoValueRadialChart
             name={"Parking"}
             categoryData={ParkingVaiolations}
-            innerRadius={10}
-            outerRadius={20}
+            innerRadius={_innerRadius}
+            outerRadius={_outerRadius}
             height={100}
           />
         </motion.div>
