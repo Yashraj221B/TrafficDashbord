@@ -1,34 +1,61 @@
+import { useState, useEffect } from "react";
+
 import { Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/common/Sidebar";
 
 import OverviewPage from "./pages/OverviewPage";
-import ProductsPage from "./pages/ProductsPage";
 import UsersPage from "./pages/UsersPage";
-import SalesPage from "./pages/SalesPage";
-import OrdersPage from "./pages/OrdersPage";
-import AnalyticsPage from "./pages/AnalyticsPage";
+import ChalanPage from "./pages/ChalanPage";
 import SettingsPage from "./pages/SettingsPage";
-import MainPage from "./pages/MainPage";
-import Demo from "./pages/LoginPage";
+import LoginPage from "./pages/LoginPage";
+
 
 function App() {
+
+	function setLocalStorage(_isLoggedIn, _username) {
+		setIsLoggedIn(_isLoggedIn);
+		setUsername(_username);
+		localStorage.setItem('isLoggedIn', _isLoggedIn);
+		localStorage.setItem('username', _username);
+	}
+
+    const [username, setUsername] = useState(() => {
+        return localStorage.getItem('isLoggedIn') === 'true';
+    });
+
+	// Retrieve the login state from localStorage
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        return localStorage.getItem('isLoggedIn') === 'true';
+    });
+
+    // Save the login state to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('isLoggedIn', isLoggedIn);
+		localStorage.setItem('username', username);
+    }, [isLoggedIn, username]);
+
 	return (
-		<div >
+
+		<div className={isLoggedIn ? 'flex h-screen bg-gray-900 text-gray-100 overflow-hidden' : ''}>
 			{/* BG */}
+			{isLoggedIn === true && 
+			<div className='fixed inset-0 z-0'>
+				<div className='absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-80' />
+				<div className='absolute inset-0 backdrop-blur-sm' />
+			</div>
+			}
 
+			{isLoggedIn === true && <Sidebar />}
 
-			 
 			<Routes>
-				<Route path='/' element={<Demo />} />
-				<Route path='/overview' element={<OverviewPage />} />
-				<Route path='/products' element={<ProductsPage />} />
+				<Route path='/'           element={<LoginPage setter={setLocalStorage}/>} />
+				<Route path='/overview'   element={<OverviewPage />} />
 				<Route path='/Volunteers' element={<UsersPage />} />
-				<Route path='/chalan' element={<SalesPage />} />
-				<Route path='/orders' element={<OrdersPage />} />
-				<Route path='/analytics' element={<AnalyticsPage />} />
-				<Route path='/settings' element={<SettingsPage />} />
+				<Route path='/chalan'     element={<ChalanPage />} />
+				<Route path='/settings'   element={<SettingsPage />} />
 			</Routes>
+
 		</div>
 	);
 }
