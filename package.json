@@ -16,6 +16,7 @@
     "@mui/x-charts": "^7.27.1",
     "@mui/x-date-pickers": "^7.27.3",
     "@vis.gl/react-google-maps": "^1.5.2",
+    "caniuse-lite": "^1.0.30001705",
     "commonjs": "^0.0.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
