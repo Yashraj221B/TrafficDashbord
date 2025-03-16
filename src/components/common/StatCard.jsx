@@ -1,19 +1,31 @@
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 
-const StatCard = ({ name, icon: Icon, value, color }) => {
-	return (
-		<motion.div
-			className='bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg rounded-xl border border-gray-700'
-			whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
-		>
-			<div className='px-4 py-5 sm:p-6'>
-				<span className='flex items-center text-sm font-medium text-gray-400'>
-					<Icon size={20} className='mr-2' style={{ color }} />
-					{name}
-				</span>
-				<p className='mt-1 text-3xl font-semibold text-gray-100'>{value}</p>
-			</div>
-		</motion.div>
-	);
+// const StatCard = ({ name, icon: Icon, value, color }) => {
+// 	return (
+// 		<motion.div
+// 			className='bg-gray-800 bg-opacity-50 backdrop-blur-md overflow-hidden shadow-lg rounded-xl border border-gray-700'
+// 			whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
+// 		>
+// 			<div className='px-4 py-5 sm:p-6'>
+// 				<span className='flex items-center text-sm font-medium text-gray-400'>
+// 					<Icon size={20} className='mr-2' style={{ color }} />
+// 					{name}
+// 				</span>
+// 				<p className='mt-1 text-3xl font-semibold text-gray-100'>{value}</p>
+// 			</div>
+// 		</motion.div>
+// 	);
+// };
+// export default StatCard;
+import React from 'react';
+
+const StatCard = ({ type, location }) => {
+    return (
+        <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-white">{type}</h3>
+            <p className="text-gray-400">{location}</p>
+        </div>
+    );
 };
+
 export default StatCard;
