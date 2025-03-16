@@ -12,7 +12,7 @@ const Profile = () => {
 				/>
 
 				<div>
-					<h3 className='text-lg font-semibold text-gray-100'>{localStorage.getItem('isLoggedIn')}</h3>
+					<h3 className='text-lg font-semibold text-gray-100'>{localStorage.getItem('username')}</h3>
 					<p className='text-gray-400'>john.doe@example.com</p>
 				</div>
 			</div>

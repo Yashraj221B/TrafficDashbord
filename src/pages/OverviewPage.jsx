@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Header from "../components/common/Header";
 import LineGraph from "../components/overview/lineGraph";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesChannelChart from "../components/overview/SalesChannelChart";
+import InfractionByDivisionChart from "../components/overview/InfractionByDivisionChart";
 import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
 
 const Infractions = [
@@ -87,7 +87,7 @@ const OverviewPage = () => {
             categoryData={Infractions}
             name={"Infractions"}
           />
-          <SalesChannelChart />
+          <InfractionByDivisionChart />
         </div>
       </main>
     </div>
