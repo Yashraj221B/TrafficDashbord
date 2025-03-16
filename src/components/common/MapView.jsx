@@ -6,7 +6,9 @@ class MapContainer extends Component{
         const containerStyle = {
             position: 'relative',
             width: '100%',
-            height: '400px' // You can adjust this height as needed
+            height: '407px', // You can adjust this height as needed
+            borderRadius: '10px',
+            overflow: 'hidden' // This ensures the map content also follows the rounded corners
         };
         
         return(
