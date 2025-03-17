@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, Check, Clock, FileSearch, Mail, MapPin, Search, Calendar } from "lucide-react";
+import { AlertTriangle, Check, Clock, FileSearch, Mail, MapPin, Search, Calendar, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import * as XLSX from "xlsx";
 
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
@@ -18,7 +19,27 @@ const QueryManagementPage = () => {
     const [departmentEmail, setDepartmentEmail] = useState("");
     const [departmentName, setDepartmentName] = useState("");
     const [emailSending, setEmailSending] = useState(false);
+    // Original query stats (all data)
     const [queryStats, setQueryStats] = useState({
+        byStatus: {
+            pending: 0,
+            inProgress: 0,
+            resolved: 0,
+            rejected: 0
+        },
+        byType: {
+            trafficViolation: 0,
+            trafficCongestion: 0,
+            accident: 0,
+            roadDamage: 0,
+            illegalParking: 0,
+            suggestion: 0,
+            generalReport: 0
+        },
+        total: 0
+    });
+    // New state for filtered query stats
+    const [filteredStats, setFilteredStats] = useState({
         byStatus: {
             pending: 0,
             inProgress: 0,
@@ -45,6 +66,7 @@ const QueryManagementPage = () => {
     const [selectedStatus, setSelectedStatus] = useState("");
     const [viewDetailsId, setViewDetailsId] = useState(null);
     const [detailsData, setDetailsData] = useState(null);
+    const [exportLoading, setExportLoading] = useState(false);
 
     useEffect(() => {
         fetchQueryStats();
@@ -53,15 +75,78 @@ const QueryManagementPage = () => {
 		}
 	}, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive]);
 
+    // Update filtered stats whenever queries change
+    useEffect(() => {
+        calculateFilteredStats();
+    }, [queries]);
+
     const fetchQueryStats = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/queries/statistics');
             if (response.data.success) {
                 setQueryStats(response.data.stats);
+                // Initially set filtered stats to be the same as all stats
+                if (!searchTerm && !selectedType && !selectedStatus && !timelineActive) {
+                    setFilteredStats(response.data.stats);
+                }
             }
         } catch (error) {
             console.error("Error fetching query statistics:", error);
         }
+    };
+
+    const calculateFilteredStats = () => {
+        // Calculate statistics based on the current filtered queries
+        if (!queries.length) return;
+
+        const byStatus = {
+            pending: 0,
+            inProgress: 0,
+            resolved: 0,
+            rejected: 0
+        };
+        
+        const byType = {
+            trafficViolation: 0,
+            trafficCongestion: 0,
+            accident: 0,
+            roadDamage: 0,
+            illegalParking: 0,
+            suggestion: 0,
+            generalReport: 0
+        };
+        
+        // Count occurrences of each status and type
+        queries.forEach(query => {
+            // Count by status
+            if (query.status === "Pending") byStatus.pending++;
+            else if (query.status === "In Progress") byStatus.inProgress++;
+            else if (query.status === "Resolved") byStatus.resolved++;
+            else if (query.status === "Rejected") byStatus.rejected++;
+            
+            // Count by type
+            const typeKey = query.query_type.replace(/\s+/g, '').charAt(0).toLowerCase() + query.query_type.replace(/\s+/g, '').slice(1);
+            if (byType.hasOwnProperty(typeKey)) {
+                byType[typeKey]++;
+            } else {
+                // Handle query types that don't match our predefined keys
+                if (query.query_type === "Traffic Violation") byType.trafficViolation++;
+                else if (query.query_type === "Traffic Congestion") byType.trafficCongestion++;
+                else if (query.query_type === "Accident") byType.accident++;
+                else if (query.query_type === "Road Damage") byType.roadDamage++;
+                else if (query.query_type === "Illegal Parking") byType.illegalParking++;
+                else if (query.query_type === "Suggestion") byType.suggestion++;
+                else if (query.query_type === "General Report") byType.generalReport++;
+            }
+        });
+        
+        const total = queries.length;
+        
+        setFilteredStats({
+            byStatus,
+            byType,
+            total,
+        });
     };
 
     const fetchQueries = async () => {
@@ -183,31 +268,46 @@ const QueryManagementPage = () => {
         window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, '_blank');
     };
 
-	const applyTimelineFilter = async () => {
-		if (!startDate || !endDate) {
-			alert("Please select both start and end dates");
-			return;
-		}
-		
-		setLoading(true);
-		setTimelineActive(true);
-		
-		try {
-			const response = await axios.get(
-				`http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z`
-			);
-			
-			if (response.data.success) {
-				setQueries(response.data.data);
-				setTotalPages(Math.ceil(response.data.count / 20)); // Assuming 20 per page
-				setCurrentPage(1);
-			}
-		} catch (error) {
-			console.error("Error fetching timeline queries:", error);
-		} finally {
-			setLoading(false);
-		}
-	};
+	// Update only the applyTimelineFilter function:
+
+const applyTimelineFilter = async () => {
+    if (!startDate || !endDate) {
+        alert("Please select both start and end dates");
+        return;
+    }
+    
+    setLoading(true);
+    setTimelineActive(true);
+    
+    try {
+        console.log("Date strings from inputs:", startDate, endDate);
+        
+        // Format dates with timezone consideration
+        const formattedStartDate = startDate; // Use as is from date input
+        const formattedEndDate = endDate; // Use as is from date input
+        
+        console.log(`Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}`);
+        
+        const response = await axios.get(
+            `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}`
+        );
+        
+        if (response.data.success) {
+            console.log(`Received ${response.data.count} queries for time range`);
+            setQueries(response.data.data);
+            setTotalPages(Math.ceil(response.data.count / 20)); // Assuming 20 per page
+            setCurrentPage(1);
+        }
+    } catch (error) {
+        console.error("Error fetching timeline queries:", error);
+        if (error.response) {
+            console.error("Server response data:", error.response.data);
+        }
+        alert("Error fetching data. See console for details.");
+    } finally {
+        setLoading(false);
+    }
+};
 	
 	const clearTimelineFilter = () => {
 		setStartDate("");
@@ -257,6 +357,99 @@ const QueryManagementPage = () => {
         setDetailsData(null);
     };
 
+    // Function to download current data as Excel
+    const downloadAsExcel = async () => {
+        setExportLoading(true);
+        try {
+            // Determine what data to download (current page only vs all filtered data)
+            // For better UX, we'll download all data that matches the current filters
+            let dataToDownload = [];
+            
+            // If there are filters active or we're in timeline mode, download what we have
+            if (searchTerm || selectedType || selectedStatus || timelineActive) {
+                // For small datasets, we can just use what's already loaded
+                if (queries.length < 100) {
+                    dataToDownload = queries;
+                } else {
+                    // For larger datasets, make a dedicated API call to get all matching data (not just current page)
+                    // We'll construct a URL similar to fetchQueries but without pagination limits
+                    let url = `http://localhost:3000/api/queries?limit=1000`;
+                    
+                    if (searchTerm) {
+                        url += `&search=${searchTerm}`;
+                    }
+                    
+                    if (selectedType && selectedType !== "all") {
+                        url += `&query_type=${selectedType}`;
+                    }
+                    
+                    if (selectedStatus && selectedStatus !== "all") {
+                        url += `&status=${selectedStatus}`;
+                    }
+                    
+                    if (timelineActive && startDate && endDate) {
+                        // Use timeline endpoint instead
+                        url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000`;
+                    }
+                    
+                    const response = await axios.get(url);
+                    if (response.data.success) {
+                        dataToDownload = response.data.data;
+                    }
+                }
+            } else {
+                // If no filters, we might want all data, but that could be a lot
+                // Let's limit to 1000 most recent entries to avoid browser issues
+                const response = await axios.get(`http://localhost:3000/api/queries?limit=1000`);
+                if (response.data.success) {
+                    dataToDownload = response.data.data;
+                }
+            }
+            
+            // Transform the data for Excel format
+            const excelData = dataToDownload.map(q => ({
+                'ID': q._id,
+                'Type': q.query_type,
+                'Description': q.description,
+                'Status': q.status,
+                'User': q.user_name,
+                'Contact': q.user_id,
+                'Date': formatDate(q.timestamp),
+                'Location': q.location?.address || 'N/A',
+                'Latitude': q.location?.latitude || 'N/A',
+                'Longitude': q.location?.longitude || 'N/A',
+                'Resolution Note': q.resolution_note || '',
+                'Resolved At': q.resolved_at ? formatDate(q.resolved_at) : ''
+            }));
+            
+            // Create worksheet
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            
+            // Create workbook
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Queries');
+            
+            // Generate filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            let fileName = `traffic-buddy-queries-${dateStr}.xlsx`;
+            
+            // Add filter info to filename
+            if (selectedType) fileName = `${selectedType.toLowerCase()}-${fileName}`;
+            if (selectedStatus) fileName = `${selectedStatus.toLowerCase()}-${fileName}`;
+            if (timelineActive) fileName = `timeline-${fileName}`;
+            
+            // Write and download
+            XLSX.writeFile(workbook, fileName);
+            
+        } catch (error) {
+            console.error("Error exporting data:", error);
+            alert("There was an error exporting your data. Please try again.");
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
     return (
         <div className='flex-1 overflow-auto relative z-10'>
             <Header title='Query Management' />
@@ -272,25 +465,25 @@ const QueryManagementPage = () => {
                     <StatCard
                         name='Total Queries'
                         icon={FileSearch}
-                        value={queryStats.total.toLocaleString()}
+                        value={filteredStats.total.toLocaleString()}
                         color='#6366F1'
                     />
                     <StatCard 
                         name='Pending Queries' 
                         icon={Clock} 
-                        value={queryStats.byStatus?.pending || 0} 
+                        value={filteredStats.byStatus?.pending || 0} 
                         color='#F59E0B' 
                     />
                     <StatCard
                         name='In Progress'
                         icon={AlertTriangle}
-                        value={queryStats.byStatus?.inProgress || 0}
+                        value={filteredStats.byStatus?.inProgress || 0}
                         color='#3B82F6'
                     />
                     <StatCard 
                         name='Resolved' 
                         icon={Check} 
-                        value={queryStats.byStatus?.resolved || 0} 
+                        value={filteredStats.byStatus?.resolved || 0} 
                         color='#10B981' 
                     />
                 </motion.div>
@@ -341,6 +534,25 @@ const QueryManagementPage = () => {
                                 <option value="Resolved">Resolved</option>
                                 <option value="Rejected">Rejected</option>
                             </select>
+                            
+                            {/* Download Button */}
+                            <button 
+                                onClick={downloadAsExcel}
+                                disabled={exportLoading}
+                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center"
+                            >
+                                {exportLoading ? (
+                                    <>
+                                        <div className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full mr-2"></div>
+                                        Exporting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download size={18} className="mr-2" />
+                                        Download Excel
+                                    </>
+                                )}
+                            </button>
                         </div>
 						{/* Add this inside the filter section div */}
 						<div className="flex items-center gap-3 w-full md:w-auto mt-3 md:mt-0">
@@ -500,11 +712,11 @@ const QueryManagementPage = () => {
                     )}
                 </motion.div>
                 
-                {/* QUERY CHARTS */}
+                {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8'>
-                    <QueryStatusChart stats={queryStats.byStatus} />
-                    <QueryTypeDistribution stats={queryStats.byType} />
-                    <QueryTrends className="lg:col-span-2" />
+                    <QueryStatusChart stats={filteredStats.byStatus} />
+                    <QueryTypeDistribution stats={filteredStats.byType} />
+                    <QueryTrends className="lg:col-span-2" timelineActive={timelineActive} startDate={startDate} endDate={endDate} />
                 </div>
                 
 				{/* Query Details Modal */}
