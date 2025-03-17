@@ -185,24 +185,31 @@ const OverviewPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {recentActivity.slice(0, 5).map((activity, idx) => (
-                  <tr key={activity._id} className={idx % 2 === 0 ? 'bg-gray-800 bg-opacity-40' : 'bg-gray-800 bg-opacity-20'}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{activity.query_type}</td>
-                    <td className="px-6 py-4 text-sm text-gray-200">{activity.description}</td>
-                    <td className="px-6 py-4 text-sm text-gray-300">{activity.location.address.split(',').slice(0, 2).join(',')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${activity.status === 'Pending' ? 'bg-yellow-800 text-yellow-100' : 
-                        activity.status === 'In Progress' ? 'bg-blue-800 text-blue-100' : 
-                        'bg-green-800 text-green-100'}`}>
-                        {activity.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      {new Date(activity.timestamp).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
+                {recentActivity.slice(0, 5).map((activity, idx) => {
+                  // Safely extract location address with fallback values
+                  const locationAddress = activity.location?.address ? 
+                    activity.location.address.split(',').slice(0, 2).join(',') : 
+                    'Location not available';
+                  
+                  return (
+                    <tr key={activity._id} className={idx % 2 === 0 ? 'bg-gray-800 bg-opacity-40' : 'bg-gray-800 bg-opacity-20'}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{activity.query_type || 'Unknown'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-200">{activity.description || 'No description'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-300">{locationAddress}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          ${activity.status === 'Pending' ? 'bg-yellow-800 text-yellow-100' : 
+                          activity.status === 'In Progress' ? 'bg-blue-800 text-blue-100' : 
+                          'bg-green-800 text-green-100'}`}>
+                          {activity.status || 'Unknown'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Unknown time'}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

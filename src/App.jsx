@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Sidebar from "./components/common/Sidebar";
 import OverviewPage from "./pages/OverviewPage";
 import UsersPage from "./pages/UsersPage";
@@ -19,22 +20,11 @@ function App() {
     localStorage.setItem('username', _username);
   }
 
-//   useEffect(() => {
-//     async function fetchData() {
-//       try {
-//         const response = await fetch('http://localhost:5000/data');
-//         const data = await response.json();
-//         console.log("Data from backend:", data);
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       }
-//     }
-
-//     fetchData();
-//   }, []);
-
   return (
     <div className={isLoggedIn ? 'flex h-screen bg-gray-900 text-gray-100 overflow-hidden' : ''}>
+      {/* Toast notifications */}
+      <Toaster position="top-right" />
+      
       {/* BG */}
       {isLoggedIn && 
       <div className='fixed inset-0 z-0'>
