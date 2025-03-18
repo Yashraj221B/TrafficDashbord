@@ -21,14 +21,14 @@ function App() {
   }
 
   return (
-    <div className={isLoggedIn ? 'flex h-screen bg-gray-900 text-gray-100 overflow-hidden' : ''}>
+    <div className={isLoggedIn ? 'flex h-screen bg-bgPrimary text-tBase overflow-hidden' : ''}>
       {/* Toast notifications */}
       <Toaster position="top-right" />
       
       {/* BG */}
       {isLoggedIn && 
       <div className='fixed inset-0 z-0'>
-        <div className='absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-80' />
+        <div className='absolute inset-0 bg-gradient-to-br from-bgPrimary via-primary to-bgPrimary opacity-80' />
         <div className='absolute inset-0 backdrop-blur-sm' />
       </div>
       }
