@@ -8,8 +8,7 @@ import {
   Legend,
 } from "recharts";
 import { useState } from "react";
-
-const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
+import Themes, { getCurrentTheme } from "../../assets/Themes";
 
 const CategoryDistributionChart = ({
   categoryData,
@@ -20,13 +19,6 @@ const CategoryDistributionChart = ({
 }) => {
   const [showAllLabels, setShowAllLabels] = useState(true);
 
-  const getLargestValue = () => {
-    return categoryData.reduce(
-      (max, item) => (item.value > max.value ? item : max),
-      categoryData[0]
-    );
-  };
-
   const renderLabel = ({ name, percent }) => {
     if (showAllLabels) {
       return `${(percent * 100).toFixed(0)}%`;
@@ -36,16 +28,17 @@ const CategoryDistributionChart = ({
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+      className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg
+shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium text-gray-100">{name}</h2>
+        <h2 className="text-lg font-medium text-tBase">{name}</h2>
         <button
           onClick={() => setShowAllLabels(!showAllLabels)}
-          className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-md text-gray-100"
+          className="px-3 py-1 text-sm bg-primary hover:bg-hovPrimary rounded-md text-tBase"
         >
           {showAllLabels ? "Hide Labels" : "Show Labels"}
         </button>
@@ -61,23 +54,28 @@ const CategoryDistributionChart = ({
               innerRadius={innerRadius}
               outerRadius={outerRadius}
               fill="#2884d8"
+              stroke={Themes[getCurrentTheme()]["bgPrimary"]}
               dataKey="value"
               label={renderLabel}
             >
               {categoryData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+                  fill={Themes[getCurrentTheme()]["COLORS"][index % Themes[getCurrentTheme()]["COLORS"].length]}
                 />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(31, 41, 55, 0.8)",
-                borderColor: "#4B5563",
-              }}
-              itemStyle={{ color: "#E5E7EB" }}
-            />
+                contentStyle={{
+                  backgroundColor: Themes[getCurrentTheme()]["bgPrimary"],
+                  opacity: "80%",
+                  borderColor: Themes[getCurrentTheme()]["borderPrimary"],
+                }}
+                itemStyle={{
+                  color: Themes[getCurrentTheme()]["tBase"],
+                  opacity: "100%",
+                }}
+              />
             <Legend
               align="right"
               verticalAlign="middle"

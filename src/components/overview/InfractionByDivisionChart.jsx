@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
-
-const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
+import Themes, { getCurrentTheme } from "../../assets/Themes";
 
 const generateRandomValue = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -31,35 +30,40 @@ const truncateLabel = (label) => {
 const InfractionByDivisionChart = () => {
   return (
     <motion.div
-      className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 lg:col-span-2 border border-gray-700'
+      className='bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 lg:col-span-2 border border-borderPrimary'
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <h2 className='text-lg font-medium mb-4 text-gray-100'>Infractions by division</h2>
+      <h2 className='text-lg font-medium mb-4 text-tBase'>Infractions by division</h2>
 
       <div className='h-80'>
         <ResponsiveContainer>
           <BarChart data={Infractions_data}>
-            <CartesianGrid strokeDasharray='3 3' stroke='#4B5563' />
+            <CartesianGrid strokeDasharray='3 3' stroke={Themes[getCurrentTheme()]["cartGrid"]} />
             <XAxis
               dataKey='name'
-              stroke='#9CA3AF'
+              stroke={Themes[getCurrentTheme()]["cartAxis"]}
               fontSize={12}
               tickFormatter={truncateLabel}
             />
-            <YAxis stroke='#9CA3AF' />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(31, 41, 55, 0.8)",
-                borderColor: "#4B5563",
-              }}
-              itemStyle={{ color: "#E5E7EB" }}
-            />
+            <YAxis stroke={Themes[getCurrentTheme()]["cartAxis"]} />
+            <Tooltip 
+              cursor={{ fill: Themes[getCurrentTheme()]["primary"] }} 
+                contentStyle={{
+                  backgroundColor:Themes[getCurrentTheme()]["bgPrimary"],
+                  opacity: "80%",
+                  borderColor: Themes[getCurrentTheme()]["borderPrimary"],
+                }}
+                itemStyle={{
+                  color: Themes[getCurrentTheme()]["tBase"],
+                  opacity: "100%",
+                }}
+              />
             <Legend fontSize={12} />
-            <Bar dataKey={"value"} fill='#8884d8'>
+            <Bar dataKey={"value"} fill={Themes[getCurrentTheme()]["bgSecondary"]}>
               {Infractions_data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={Themes[getCurrentTheme()]["COLORS"][index % Themes[getCurrentTheme()]["COLORS"].length]} />
               ))}
             </Bar>
           </BarChart>

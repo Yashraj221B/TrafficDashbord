@@ -6,8 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
+import Themes, { getCurrentTheme } from "../../assets/Themes";
 
 const CategoryDistributionChart = ({
   categoryData,
@@ -16,6 +15,7 @@ const CategoryDistributionChart = ({
   height = 320,
   name = "Pie Chart",
 }) => {
+
   const getLargestValue = () => {
     return categoryData.reduce(
       (max, item) => (item.value > max.value ? item : max),
@@ -34,28 +34,28 @@ const CategoryDistributionChart = ({
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+      className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium text-gray-100">{name}</h2>
+        <h2 className="text-lg font-medium text-tBase">{name}</h2>
       </div>
       <div className="flex" style={{ height }}>
         <div className="w-2/5">
           <ResponsiveContainer width={"100%"} height={"100%"}>
             <PieChart>
-            <text
+              <text
                 x={"50%"}
                 y={"50%"}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="#fff"
+                fill= {Themes[getCurrentTheme()]["tBase"]}
                 fontSize={14}
               >
                 {Math.round(getLargestValuePercentage())}%
-            </text>
+              </text>
               <Pie
                 data={categoryData}
                 cx={"50%"}
@@ -63,37 +63,51 @@ const CategoryDistributionChart = ({
                 innerRadius={innerRadius}
                 outerRadius={outerRadius}
                 fill="#2884d8"
+                stroke={Themes[getCurrentTheme()]["bgPrimary"]}
                 dataKey="value"
               >
                 {categoryData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    fill={
+                      Themes[getCurrentTheme()]["COLORS"][
+                        index % Themes[getCurrentTheme()]["COLORS"].length
+                      ]
+                    }
                   />
                 ))}
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(31, 41, 55, 0.8)",
-                  borderColor: "#4B5563",
+                  backgroundColor: Themes[getCurrentTheme()]["bgPrimary"],
+                  opacity: "80%",
+                  borderColor: Themes[getCurrentTheme()]["borderPrimary"],
                 }}
-                itemStyle={{ color: "#E5E7EB" }}
+                itemStyle={{
+                  color: Themes[getCurrentTheme()]["tBase"],
+                  opacity: "100%",
+                }}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div className="w-4/5 flex flex-col justify-center items-start pl-6">
-        <div className="space-y-3">
+          <div className="space-y-3">
             {categoryData.map((item, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                    <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    />
-                    <span className="text-gray-200 text-sm">{item.name}</span>
-                </div>
+              <div key={index} className="flex items-center space-x-3">
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{
+                    backgroundColor:
+                      Themes[getCurrentTheme()]["COLORS"][
+                        index % Themes[getCurrentTheme()]["COLORS"].length
+                      ],
+                  }}
+                />
+                <span className="text-tBase text-sm">{item.name}</span>
+              </div>
             ))}
-        </div>
+          </div>
         </div>
       </div>
     </motion.div>

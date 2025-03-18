@@ -7,6 +7,7 @@ import LineGraph from "../components/overview/lineGraph";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import InfractionByDivisionChart from "../components/overview/InfractionByDivisionChart";
 import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
+import Themes, { getCurrentTheme } from "../assets/Themes";
 
 const OverviewPage = () => {
   const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:3000';
@@ -85,7 +86,7 @@ const OverviewPage = () => {
   if (loading) {
     return (
       <div className="flex-1 overflow-auto relative z-10 flex items-center justify-center">
-        <div className="text-white text-xl">Loading dashboard data...</div>
+        <div className="text-tBase text-xl">Loading dashboard data...</div>
       </div>
     );
   }
@@ -144,14 +145,14 @@ const OverviewPage = () => {
 
         {/* Total queries count */}
         <motion.div
-          className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
+          className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-medium text-gray-100">Total Traffic Reports</h2>
-            <div className="text-3xl font-bold text-indigo-400">{dashboardData.totalQueries}</div>
+            <h2 className="text-lg font-medium text-tBase">Total Traffic Reports</h2>
+            <div className="text-3xl font-bold text-tTrafficReports">{dashboardData.totalQueries}</div>
           </div>
         </motion.div>
 
@@ -167,21 +168,22 @@ const OverviewPage = () => {
 
         {/* Recent Activity */}
         <motion.div
-          className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+          className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg
+shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <h2 className="text-lg font-medium mb-4 text-gray-100">Recent Activity</h2>
+          <h2 className="text-lg font-medium mb-4 text-tBase">Recent Activity</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-700">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Description</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Location</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Time</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-tBase uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-tBase uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-tBase uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-tBase uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-tBase uppercase tracking-wider">Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -192,7 +194,7 @@ const OverviewPage = () => {
                     'Location not available';
                   
                   return (
-                    <tr key={activity._id} className={idx % 2 === 0 ? 'bg-gray-800 bg-opacity-40' : 'bg-gray-800 bg-opacity-20'}>
+                    <tr key={activity._id} className={idx % 2 === 0 ? 'bg-bgSecondary bg-opacity-40' : 'bg-bgSecondary bg-opacity-20'}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{activity.query_type || 'Unknown'}</td>
                       <td className="px-6 py-4 text-sm text-gray-200">{activity.description || 'No description'}</td>
                       <td className="px-6 py-4 text-sm text-gray-300">{locationAddress}</td>
