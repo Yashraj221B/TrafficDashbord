@@ -24,11 +24,11 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700 mb-8'
 			transition={{ delay: 0.2 }}
 		>
 			<div className='flex items-center justify-between mb-6'>
-				<h2 className='text-xl font-semibold text-gray-100'>Chalan Overview</h2>
+				<h2 className='text-xl font-semibold text-tBase'>Chalan Overview</h2>
 
 				<select
-					className='bg-gray-700 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 
-          focus:ring-blue-500
+					className='bg-gray-700 text-tBase rounded-md px-3 py-1 focus:outline-none focus:ring-2 
+          focus:ring-secondary
           '
 					value={selectedTimeRange}
 					onChange={(e) => setSelectedTimeRange(e.target.value)}

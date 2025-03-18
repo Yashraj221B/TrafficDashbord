@@ -25,7 +25,7 @@ shadow-bgPrimary
 					<div className='flex items-center justify-between'>
 						<div>
 							<h3 className='text-sm font-medium text-gray-400'>{item.name}</h3>
-							<p className='mt-1 text-xl font-semibold text-gray-100'>{item.value}</p>
+							<p className='mt-1 text-xl font-semibold text-tBase'>{item.value}</p>
 						</div>
 
 						<div

@@ -92,7 +92,7 @@ const AnalyticsPage = () => {
   return (
     <div className="flex-1 overflow-auto relative z-10 bg-gray-900">
       <div className="flex items-center justify-between space-x-4 p-4">
-        <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
+        <h1 className="text-2xl font-bold text-tBase">Analytics Dashboard</h1>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <div className="flex space-x-4">
             <DateTimePicker

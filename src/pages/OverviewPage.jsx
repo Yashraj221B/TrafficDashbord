@@ -94,7 +94,7 @@ const OverviewPage = () => {
   if (error) {
     return (
       <div className="flex-1 overflow-auto relative z-10 flex items-center justify-center">
-        <div className="bg-red-800 bg-opacity-50 backdrop-blur-md p-5 rounded-lg text-white">
+        <div className="bg-red-800 bg-opacity-50 backdrop-blur-md p-5 rounded-lg text-tBase">
           {error}
         </div>
       </div>

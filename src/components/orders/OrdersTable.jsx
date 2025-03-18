@@ -35,12 +35,12 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
 			transition={{ delay: 0.4 }}
 		>
 			<div className='flex justify-between items-center mb-6'>
-				<h2 className='text-xl font-semibold text-gray-100'>Order List</h2>
+				<h2 className='text-xl font-semibold text-tBase'>Order List</h2>
 				<div className='relative'>
 					<input
 						type='text'
 						placeholder='Search orders...'
-						className='bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+						className='bg-gray-700 text-tBase placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary'
 						value={searchTerm}
 						onChange={handleSearch}
 					/>
@@ -81,13 +81,13 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
 								animate={{ opacity: 1 }}
 								transition={{ duration: 0.3 }}
 							>
-								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-tBase'>
 									{order.id}
 								</td>
-								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-tBase'>
 									{order.customer}
 								</td>
-								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-tBase'>
 									${order.total.toFixed(2)}
 								</td>
 								<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>

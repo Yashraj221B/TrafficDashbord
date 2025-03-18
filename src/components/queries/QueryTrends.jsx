@@ -37,7 +37,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
         >
-            <h2 className='text-xl font-semibold text-gray-100 mb-4'>Query Trends (Last 30 Days)</h2>
+            <h2 className='text-xl font-semibold text-tBase mb-4'>Query Trends (Last 30 Days)</h2>
             
             {loading ? (
                 <div className="flex justify-center items-center h-64">
