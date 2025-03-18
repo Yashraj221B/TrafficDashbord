@@ -32,12 +32,12 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
 			transition={{ delay: 0.2 }}
 		>
 			<div className='flex justify-between items-center mb-6'>
-				<h2 className='text-xl font-semibold text-gray-100'>Users</h2>
+				<h2 className='text-xl font-semibold text-tBase'>Users</h2>
 				<div className='relative'>
 					<input
 						type='text'
 						placeholder='Search volunteers...'
-						className='bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+						className='bg-gray-700 text-tBase placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary'
 						value={searchTerm}
 						onChange={handleSearch}
 					/>
@@ -78,12 +78,12 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
 								<td className='px-6 py-4 whitespace-nowrap'>
 									<div className='flex items-center'>
 										<div className='flex-shrink-0 h-10 w-10'>
-											<div className='h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold'>
+											<div className='h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-tBase font-semibold'>
 												{user.name.charAt(0)}
 											</div>
 										</div>
 										<div className='ml-4'>
-											<div className='text-sm font-medium text-gray-100'>{user.name}</div>
+											<div className='text-sm font-medium text-tBase'>{user.name}</div>
 										</div>
 									</div>
 								</td>

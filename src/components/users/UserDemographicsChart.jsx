@@ -20,7 +20,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700 lg:col-span-2'
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.5 }}
 		>
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Bot User Demographics</h2>
+			<h2 className='text-xl font-semibold text-tBase mb-4'>Bot User Demographics</h2>
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>
 					<PieChart>

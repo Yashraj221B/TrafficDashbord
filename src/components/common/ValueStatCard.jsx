@@ -12,7 +12,7 @@ shadow-bgPrimary rounded-xl border border-gray-700'
 					<Icon size={20} className='mr-2' style={{ color }} />
 					{name}
 				</span>
-				<p className='mt-1 text-3xl font-semibold text-gray-100'>{value}</p>
+				<p className='mt-1 text-3xl font-semibold text-tBase'>{value}</p>
 			</div>
 		</motion.div>
 	);

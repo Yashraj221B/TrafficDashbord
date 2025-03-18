@@ -209,26 +209,26 @@ const ChalanPage = () => {
 
                 {/* Broadcast Message Section */}
                 <motion.div
-                    className="mb-8 bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg
+                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg
 shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <h2 className="text-xl font-semibold text-gray-100 mb-4">Broadcast Messages</h2>
+                    <h2 className="text-xl font-semibold text-tBase mb-4">Broadcast Messages</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Broadcast to all users */}
                         <div className="space-y-3">
-                            <h3 className="text-lg text-gray-200">Broadcast to All Users</h3>
+                            <h3 className="text-lg text-tBase">Broadcast to All Users</h3>
                             <textarea
-                                className="w-full bg-gray-700 text-white rounded-md p-3 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full bg-primary text-tBase rounded-md p-3 h-32 focus:outline-none focus:ring-2 focus:ring-secondary"
                                 placeholder="Enter message to broadcast to all users..."
                                 value={broadcastMessage}
                                 onChange={(e) => setBroadcastMessage(e.target.value)}
                             ></textarea>
                             <button
-                                className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-200"
+                                className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200"
                                 onClick={handleBroadcastToAll}
                                 disabled={isBroadcasting || !broadcastMessage.trim()}
                             >
@@ -239,22 +239,22 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
 
                         {/* Broadcast to specific area */}
                         <div className="space-y-3">
-                            <h3 className="text-lg text-gray-200">Broadcast to Volunteers by Area</h3>
+                            <h3 className="text-lg text-tBase">Broadcast to Volunteers by Area</h3>
                             <input
                                 type="text"
-                                className="w-full bg-gray-700 text-white rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full bg-primary text-tBase rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-secondary"
                                 placeholder="Enter area name (e.g. Downtown, North Side...)"
                                 value={broadcastArea}
                                 onChange={(e) => setBroadcastArea(e.target.value)}
                             />
                             <textarea
-                                className="w-full bg-gray-700 text-white rounded-md p-3 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full bg-primary text-tBase rounded-md p-3 h-24 focus:outline-none focus:ring-2 focus:ring-secondary"
                                 placeholder="Enter message for volunteers in this area..."
                                 value={broadcastMessage}
                                 onChange={(e) => setBroadcastMessage(e.target.value)}
                             ></textarea>
                             <button
-                                className="flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition duration-200"
+                                className="flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-tBase py-2 px-4 rounded-md transition duration-200"
                                 onClick={handleBroadcastToArea}
                                 disabled={isBroadcasting || !broadcastMessage.trim() || !broadcastArea.trim()}
                             >
@@ -267,25 +267,24 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
 
                 {/* Join Requests Management */}
                 <motion.div
-                    className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg
-shadow-bgPrimary rounded-xl p-6 border border-gray-700"
+                    className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                        <h2 className="text-xl font-semibold text-gray-100 mb-4 md:mb-0">Join Requests</h2>
+                        <h2 className="text-xl font-semibold text-tBase mb-4 md:mb-0">Join Requests</h2>
                         
                         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                             <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="Search requests..."
-                                    className="pl-10 pr-4 py-2 bg-gray-700 rounded-md border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                    className="pl-10 pr-4 py-2 bg-primary rounded-md border border-gray-600 text-tBase focus:outline-none focus:ring-2 focus:ring-secondary w-full"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
-                                <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                                <Search className="w-4 h-4 absolute left-3 top-3 text-tSecondary" />
                             </div>
                             
                             <div className="inline-flex rounded-md shadow-sm" role="group">
@@ -296,8 +295,8 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                         onClick={() => setActiveTab(tab)}
                                         className={`px-4 py-2 text-sm font-medium ${
                                             activeTab === tab
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                                ? "bg-secondary text-tBase"
+                                                : "bg-primary text-tBase hover:bg-hovPrimary"
                                         } ${
                                             tab === "all" ? "rounded-l-lg" : ""
                                         } ${
@@ -316,22 +315,22 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                         </div>
                     ) : filteredRequests.length === 0 ? (
-                        <div className="bg-gray-700 bg-opacity-50 rounded-lg p-8 text-center">
-                            <p className="text-gray-300">No join requests found</p>
+                        <div className="bg-bgSecondary bg-opacity-50 rounded-lg p-8 text-center">
+                            <p className="text-tBase">No join requests found</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-700">
                                 <thead>
                                     <tr>
-                                        <th className="px-6 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">User</th>
-                                        <th className="px-6 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Details</th>
-                                        <th className="px-6 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 bg-gray-700 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-3 bg-gray-700 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">User</th>
+                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Details</th>
+                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Date</th>
+                                        <th className="px-6 py-3 bg-primary text-right text-xs font-medium text-tBase uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-gray-800 bg-opacity-50 divide-y divide-gray-700">
+                                <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-gray-700">
                                     {filteredRequests.map((request) => {
                                         // Extract name, email, phone from description if not available directly
                                         const descLines = request.description ? request.description.split('\n') : [];
@@ -350,17 +349,17 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center">
-                                                            <span className="text-white font-medium">{name.charAt(0).toUpperCase()}</span>
+                                                            <span className="text-tBase font-medium">{name.charAt(0).toUpperCase()}</span>
                                                         </div>
                                                         <div className="ml-4">
-                                                            <div className="text-sm font-medium text-white">{name}</div>
-                                                            <div className="text-sm text-gray-400">{phone}</div>
+                                                            <div className="text-sm font-medium text-tBase">{name}</div>
+                                                            <div className="text-sm text-tSecondary">{phone}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="text-sm text-gray-300">{email}</div>
-                                                    <div className="text-sm text-gray-400 max-w-xs truncate">
+                                                    <div className="text-sm text-tBase">{email}</div>
+                                                    <div className="text-sm text-tSecondary max-w-xs truncate">
                                                         {request.description}
                                                     </div>
                                                 </td>
@@ -372,7 +371,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                                         {request.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-tSecondary">
                                                     {new Date(request.timestamp).toLocaleDateString()}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -380,14 +379,14 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                                         <div className="flex justify-end space-x-2">
                                                             <button
                                                                 onClick={() => handleApprove(request._id)}
-                                                                className="text-green-500 hover:text-green-400 bg-gray-700 rounded-md p-2 transition"
+                                                                className="text-green-500 hover:text-green-400 bg-primary rounded-md p-2 transition"
                                                                 title="Approve"
                                                             >
                                                                 <Check className="w-4 h-4" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleReject(request._id)}
-                                                                className="text-red-500 hover:text-red-400 bg-gray-700 rounded-md p-2 transition"
+                                                                className="text-red-500 hover:text-red-400 bg-primary rounded-md p-2 transition"
                                                                 title="Reject"
                                                             >
                                                                 <X className="w-4 h-4" />

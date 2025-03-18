@@ -28,7 +28,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700'
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.6 }}
 		>
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Customer Segmentation</h2>
+			<h2 className='text-xl font-semibold text-tBase mb-4'>Customer Segmentation</h2>
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>
 					<RadarChart cx='50%' cy='50%' outerRadius='80%' data={customerSegmentationData}>
