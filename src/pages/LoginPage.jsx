@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import trafficLogo from '../assets/traffic-police-logo.jpg'; // Add your logo to assets folder
+import trafficLogo from '../assets/traffic-police-logo.jpg';
+import authService from '../services/authService';
+import { useAuth } from '../components/auth/AuthContext';
 
 const LoginPage = ({ setter }) => {
     const [username, setUsername] = useState('');
@@ -8,16 +10,21 @@ const LoginPage = ({ setter }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     useEffect(() => {
         // Reset authentication state when the component mounts
-        setter(false, "");
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('divisionId');
+        localStorage.removeItem('divisionName');
         
         // Add title
         document.title = "Traffic Buddy - Admin Dashboard";
-    }, [setter]);
+    }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         
@@ -29,25 +36,57 @@ const LoginPage = ({ setter }) => {
         
         setIsLoading(true);
         
-        // Simulate API call with timeout
-        setTimeout(() => {
-            // Check against hardcoded credentials
+        try {
+            // Check if this is the hardcoded main admin login
             if (username === 'Admin' && password === 'trafficBuddy@123') {
-                // Authentication successful
+                // Main admin login - hardcoded for now
+                setter(true, "Admin");
+                
+                // Store login data
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', 'Admin');
+                localStorage.setItem('userRole', 'main_admin');
+                
+                // Set auth context
+                await login(username, password);
+                
+                navigate('/overview');
+                return;
+            }
+            
+            // If not main admin, try division login via API
+            const response = await authService.login(username, password);
+            
+            if (response.success) {
+                // Set local state via setter prop
                 setter(true, username);
+                
+                // Store login state in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                localStorage.setItem('userRole', response.role);
+                
+                if (response.division) {
+                    localStorage.setItem('divisionId', response.division.id);
+                    localStorage.setItem('divisionName', response.division.name);
+                }
+                
+                // Navigate to dashboard
                 navigate('/overview');
             } else {
-                // Authentication failed
-                setError('Invalid username or password');
-                setIsLoading(false);
+                throw new Error(response.message || 'Login failed');
             }
-        }, 800);
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('Invalid username or password');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg
-shadow-bgPrimary border border-gray-100">
+            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg shadow-bgPrimary border border-gray-100">
                 <div className="text-center">
                     <div className="flex items-center justify-center mb-4">
                         <img 
