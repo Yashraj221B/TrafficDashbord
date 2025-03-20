@@ -19,7 +19,6 @@ import StatCard from "../components/common/StatCard";
 import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
-import { capitalize } from "@mui/material";
 
 const divisions = [
   { value: "MAHALUNGE", label: "Mhalunge", id: "67dac1a2a771ed87f82890b2" },
@@ -42,7 +41,7 @@ const divisions = [
   { value: "TALEGAON", label: "Talegaon", id: "67dac3e9bb20f51c531c1509" },
 ];
 
-const QueryManagementPage = () => {
+const AdminQueryManagementPage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [timelineActive, setTimelineActive] = useState(false);
@@ -519,8 +518,7 @@ const QueryManagementPage = () => {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      {/* YASHRAJ: Make sure this works properly when the component mounts */}
-      <Header title={ (selectedDivision) + " Division Query Management" }/>
+      <Header title="Query Management" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
         {/* STATS */}
@@ -689,6 +687,102 @@ const QueryManagementPage = () => {
 
             {/* Add this inside the filter section div */}
             <div className="flex text-tBase items-center gap-3 w-full md:w-auto mt-3 md:mt-0">
+              <label className="text-tBase">Select Division:</label>
+              <select
+                id="division-select"
+                name="divisions"
+                value={selectedDivision}
+                onChange={handleDivisionFilter}
+                className="bg-primary text-tBase rounded-lg border-2 border-borderPrimary px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+              >
+                <option className="bg-primary hover:bg-hovPrimary" value="">
+                  All Divisions
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="MHALUNGE"
+                >
+                  Mahalunge
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="CHAKAN"
+                >
+                  Chakan
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="DIGHI ALANDI"
+                >
+                  Dighi-Alandi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="BHOSARI"
+                >
+                  Bhosari
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="TALWADE"
+                >
+                  Talwade
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="PIMPRI"
+                >
+                  Pimpri
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="CHINCHWAD"
+                >
+                  Chinchwad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="NIGDI"
+                >
+                  Nigdi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="SANGHVI"
+                >
+                  Sanghvi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="HINJEWADI"
+                >
+                  Hinjewadi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="WAKAD"
+                >
+                  Wakad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="BACDHAN"
+                >
+                  Bavdhan
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="DEHUROAD"
+                >
+                  Dehuroad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="TALEGOAN"
+                >
+                  Talegaon
+                </option>
+              </select>
               <div className="flex items-center">
                 <Calendar size={18} className="text-tBase mr-2" />
                 <span className="text-tBase mr-2">From:</span>
@@ -1135,4 +1229,4 @@ const QueryManagementPage = () => {
   );
 };
 
-export default QueryManagementPage;
+export default AdminQueryManagementPage;
