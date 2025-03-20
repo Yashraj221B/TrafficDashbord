@@ -40,7 +40,7 @@ const LoginPage = ({ setter }) => {
             // Check if this is the hardcoded main admin login
             if (username === 'Admin' && password === 'trafficBuddy@123') {
                 // Main admin login - hardcoded for now
-                setter(true, "Admin");
+                setter('true', "Admin");
                 
                 // Store login data
                 localStorage.setItem('isLoggedIn', 'true');
@@ -85,8 +85,8 @@ const LoginPage = ({ setter }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg shadow-bgPrimary border border-gray-100">
+        <div className='flex-1 overflow-auto relative z-10 flex items-center justify-center'>
+            <div className="max-w-md w-full space-y-8 bg-bgSecondary p-8 rounded-xl shadow-lg shadow-bgPrimary border border-borderPrimary">
                 <div className="text-center">
                     <div className="flex items-center justify-center mb-4">
                         <img 
@@ -96,8 +96,8 @@ const LoginPage = ({ setter }) => {
                             onError={(e) => e.target.src = 'https://placehold.co/64x64?text=TP'} 
                         />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800">Traffic Buddy Admin Portal</h2>
-                    <p className="mt-2 text-sm text-gray-600">Enter your credentials to access the dashboard</p>
+                    <h2 className="text-2xl font-bold text-tBase">Traffic Buddy Admin Portal</h2>
+                    <p className="mt-2 text-sm text-tSecondary">Enter your credentials to access the dashboard</p>
                 </div>
                 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -118,7 +118,7 @@ const LoginPage = ({ setter }) => {
                     
                     <div className="rounded-md -space-y-px">
                         <div className="mb-5">
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="username" className="block text-sm font-medium text-tSecondary mb-1">
                                 Username
                             </label>
                             <input
@@ -129,13 +129,13 @@ const LoginPage = ({ setter }) => {
                                 required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-secondary focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="bg-primary appearance-none relative block w-full px-3 py-3 border border-borderPrimary placeholder-gray-500 text-tBase rounded-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
                                 placeholder="Enter your username"
                                 disabled={isLoading}
                             />
                         </div>
                         <div className="mb-5">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="password" className="block text-sm font-medium text-tSecondary mb-1">
                                 Password
                             </label>
                             <input
@@ -146,7 +146,7 @@ const LoginPage = ({ setter }) => {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-secondary focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="bg-primary appearance-none relative block w-full px-3 py-3 border border-borderPrimary placeholder-gray-500 text-tBase rounded-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
                                 placeholder="Enter your password"
                                 disabled={isLoading}
                             />
@@ -158,7 +158,7 @@ const LoginPage = ({ setter }) => {
                             type="submit"
                             disabled={isLoading}
                             className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-tBase ${
-                                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
+                                isLoading ? 'bg-hovSecondary cursor-not-allowed' : 'bg-secondary hover:bg-hovSecondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
                             } transition-colors duration-150`}
                         >
                             {isLoading ? (
@@ -177,7 +177,7 @@ const LoginPage = ({ setter }) => {
                 </form>
                 
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-tDisabled">
                         Traffic Buddy Administration Portal &copy; {new Date().getFullYear()}
                     </p>
                 </div>
