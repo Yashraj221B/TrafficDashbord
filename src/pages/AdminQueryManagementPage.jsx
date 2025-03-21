@@ -21,24 +21,20 @@ import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 
 const divisions = [
-  { value: "MAHALUNGE", label: "Mhalunge", id: "67dac1a2a771ed87f82890b2" },
-  { value: "CHAKAN", label: "Chakan", id: "NOT_SPECIFIED" },
-  {
-    value: "DIGHI ALANDI",
-    label: "Dighi-Alandi",
-    id: "67db077dfa28812fe4f9573f",
-  },
-  { value: "BHOSARI", label: "Bhosari", id: "NOT_SPECIFIED" },
-  { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
-  { value: "PIMPRI", label: "Pimpri", id: "NOT_SPECIFIED" },
-  { value: "CHINCHWAD", label: "Chinchwad", id: "NOT_SPECIFIED" },
-  { value: "NIGDI", label: "Nighdi", id: "NOT_SPECIFIED" },
-  { value: "SANGHVI", label: "Sanghvi", id: "NOT_SPECIFIED" },
-  { value: "HINJEWADI", label: "Hinjewadi", id: "NOT_SPECIFIED" },
-  { value: "WAKAD", label: "Wakad", id: "NOT_SPECIFIED" },
-  { value: "BAVDHAN", label: "Bavdhan", id: "NOT_SPECIFIED" },
-  { value: "DEHUROAD", label: "Dehuroad", id: "NOT_SPECIFIED" },
-  { value: "TALEGAON", label: "Talegaon", id: "67dac3e9bb20f51c531c1509" },
+  { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
+  { value: "CHAKAN", label: "Chakan", id:"67dc019a6532e1c784d60840"},
+  { value: "DIGHI ALANDI", label: "Dighi-Alandi", id:"67db077dfa28812fe4f9573f"},
+  { value: "BHOSARI", label: "Bhosari", id:"67dc19f0a9ae16de2619b735"},
+  { value: "TALWADE", label: "Talwade", id:"67dac59365aca82fe28bb003"},
+  { value: "PIMPRI", label: "Pimpri", id:"67dc18f0a9ae16de2619b72c" },
+  { value: "CHINCHWAD", label: "Chinchwad", id:"67dc1a41a9ae16de2619b739"},
+  { value: "NIGDI", label: "Nigdi", id:"67dc184da9ae16de2619b728"},
+  { value: "SANGAVI", label: "Sangavi", id:"67dc198ea9ae16de2619b731"},
+  { value: "HINJEWADI", label: "Hinjewadi", id:"67dc19b7a9ae16de2619b733"},
+  { value: "WAKAD", label: "Wakad", id:"67dc189fa9ae16de2619b72a"},
+  { value: "BAVDHAN", label: "Bavdhan", id:"67dc1969a9ae16de2619b72f"},
+  { value: "DEHUROAD", label: "Dehuroad", id:"67dc1a22a9ae16de2619b737"},
+  { value: "TALEGAON", label: "Talegaon", id:"67dac3e9bb20f51c531c1509"},
 ];
 
 const AdminQueryManagementPage = () => {
@@ -337,13 +333,16 @@ const AdminQueryManagementPage = () => {
       // Format dates with timezone consideration
       const formattedStartDate = startDate; // Use as is from date input
       const formattedEndDate = endDate; // Use as is from date input
+      
+      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id;
 
       console.log(
-        `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${selectedDivision}`
+        `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`
       );
 
+
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${selectedDivision}`
+        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -554,6 +553,18 @@ const AdminQueryManagementPage = () => {
           />
         </motion.div>
 
+        {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-8">
+          <QueryStatusChart stats={filteredStats.byStatus} />
+          <QueryTypeDistribution stats={filteredStats.byType} />
+          <QueryTrends
+            className="lg:col-span-2"
+            timelineActive={timelineActive}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
+
         {/* FILTERS */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
@@ -700,7 +711,7 @@ const AdminQueryManagementPage = () => {
                 </option>
                 <option
                   className="bg-primary hover:bg-hovPrimary"
-                  value="MHALUNGE"
+                  value="MAHALUNGE"
                 >
                   Mahalunge
                 </option>
@@ -856,6 +867,9 @@ const AdminQueryManagementPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Division
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
@@ -924,6 +938,11 @@ const AdminQueryManagementPage = () => {
                           </button>
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
+                          {query.divisionName}
+                        </span>
+                      </td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -964,18 +983,6 @@ const AdminQueryManagementPage = () => {
             </>
           )}
         </motion.div>
-
-        {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-          <QueryStatusChart stats={filteredStats.byStatus} />
-          <QueryTypeDistribution stats={filteredStats.byType} />
-          <QueryTrends
-            className="lg:col-span-2"
-            timelineActive={timelineActive}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        </div>
 
         {/* Query Details Modal */}
         {viewDetailsId && detailsData && (

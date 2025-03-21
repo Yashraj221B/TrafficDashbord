@@ -27,7 +27,7 @@ const Sidebar = () => {
         name: "Query Management",
         icon: Users,
         color: "#EC4899",
-        href: "/volunteers",
+        href: isMainAdmin?"/adminQueryManagement":"/volunteers",
       },
     ];
 

@@ -13,18 +13,7 @@ const LoginPage = ({ setter }) => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    useEffect(() => {
-        // Reset authentication state when the component mounts
-        //localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('username');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('divisionId');
-        localStorage.removeItem('divisionName');
-
-        // Should probably remove these aswell
-        //localStorage.removeItem('authtoken');
-        //localStorage.removeItem('userData');
-        
+    useEffect(() => {        
         // Add title
         document.title = "Traffic Buddy - Admin Dashboard";
     }, []);
@@ -43,21 +32,7 @@ const LoginPage = ({ setter }) => {
         setIsLoading(true);
         
         try {
-            // Check if this is the hardcoded main admin login
-            if (username === 'Admin' && password === 'trafficBuddy@123') {
-                // Main admin login - hardcoded for now
-                setter('true', "Admin");
-                
-                // Store login data
-                //localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', 'Admin');
-                localStorage.setItem('userRole', 'main_admin');
-                
-                // Set auth context
-                await login(username, password);
-                
-                navigate('/overview');
-            }
+            console.log("Login attempt");
             
             // If not main admin, try division login via API
             const response = await authService.login(username, password);
@@ -77,9 +52,9 @@ const LoginPage = ({ setter }) => {
                 
                 // Navigate to dashboard
                 console.log("Redirection");
-                navigate('/overview');
+                navigate('/overview', { replace: true });
                 
-            } else {
+            } else {    
                 throw new Error(response.message || 'Login failed');
             }
         } catch (error) {

@@ -21,26 +21,38 @@ import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 import { capitalize } from "@mui/material";
 
+
 const divisions = [
-  { value: "MAHALUNGE", label: "Mhalunge", id: "67dac1a2a771ed87f82890b2" },
-  { value: "CHAKAN", label: "Chakan", id: "NOT_SPECIFIED" },
-  {
-    value: "DIGHI ALANDI",
-    label: "Dighi-Alandi",
-    id: "67db077dfa28812fe4f9573f",
-  },
-  { value: "BHOSARI", label: "Bhosari", id: "NOT_SPECIFIED" },
-  { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
-  { value: "PIMPRI", label: "Pimpri", id: "NOT_SPECIFIED" },
-  { value: "CHINCHWAD", label: "Chinchwad", id: "NOT_SPECIFIED" },
-  { value: "NIGDI", label: "Nighdi", id: "NOT_SPECIFIED" },
-  { value: "SANGHVI", label: "Sanghvi", id: "NOT_SPECIFIED" },
-  { value: "HINJEWADI", label: "Hinjewadi", id: "NOT_SPECIFIED" },
-  { value: "WAKAD", label: "Wakad", id: "NOT_SPECIFIED" },
-  { value: "BAVDHAN", label: "Bavdhan", id: "NOT_SPECIFIED" },
-  { value: "DEHUROAD", label: "Dehuroad", id: "NOT_SPECIFIED" },
-  { value: "TALEGAON", label: "Talegaon", id: "67dac3e9bb20f51c531c1509" },
+  { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
+  { value: "CHAKAN", label: "Chakan", id:"67dc019a6532e1c784d60840"},
+  { value: "DIGHI ALANDI", label: "Dighi-Alandi", id:"67db077dfa28812fe4f9573f"},
+  { value: "BHOSARI", label: "Bhosari", id:"67dc19f0a9ae16de2619b735"},
+  { value: "TALWADE", label: "Talwade", id:"67dac59365aca82fe28bb003"},
+  { value: "PIMPRI", label: "Pimpri", id:"67dc18f0a9ae16de2619b72c" },
+  { value: "CHINCHWAD", label: "Chinchwad", id:"67dc1a41a9ae16de2619b739"},
+  { value: "NIGDI", label: "Nigdi", id:"67dc184da9ae16de2619b728"},
+  { value: "SANGAVI", label: "Sangavi", id:"67dc198ea9ae16de2619b731"},
+  { value: "HINJEWADI", label: "Hinjewadi", id:"67dc19b7a9ae16de2619b733"},
+  { value: "WAKAD", label: "Wakad", id:"67dc189fa9ae16de2619b72a"},
+  { value: "BAVDHAN", label: "Bavdhan", id:"67dc1969a9ae16de2619b72f"},
+  { value: "DEHUROAD", label: "Dehuroad", id:"67dc1a22a9ae16de2619b737"},
+  { value: "TALEGAON", label: "Talegaon", id:"67dac3e9bb20f51c531c1509"},
 ];
+
+// const divisionName = localStorage.getItem("divisionName");
+// const _division = divisions.find(division => division.value === divisionName);
+// const divisionId = _division ? _division.id : "NOT_SPECIFIED";
+const userData = JSON.parse(localStorage.getItem("userData"));
+let divisionId = "NOT_SPECIFIED";
+let divisionName = "NOT_SPECIFIED";
+if(userData && userData.role == "division_admin"){
+  divisionId = userData.divisionId;
+  divisionName = userData.divisionName;
+}
+
+console.log("User Data: ", userData);
+console.log("Division Name: ", divisionName);
+console.log("Division ID: ", divisionId);
 
 const QueryManagementPage = () => {
   const [startDate, setStartDate] = useState("");
@@ -117,7 +129,7 @@ const QueryManagementPage = () => {
   const fetchQueryStats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/queries/statistics"
+        `http://localhost:3000/api/queries/division/${divisionId}/stats`
       );
       if (response.data.success) {
         setQueryStats(response.data.stats);
@@ -197,7 +209,7 @@ const QueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20`;
+      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&division=${divisionId}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -340,11 +352,11 @@ const QueryManagementPage = () => {
       const formattedEndDate = endDate; // Use as is from date input
 
       console.log(
-        `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${selectedDivision}`
+        `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`
       );
 
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${selectedDivision}`
+        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -438,7 +450,7 @@ const QueryManagementPage = () => {
         } else {
           // For larger datasets, make a dedicated API call to get all matching data (not just current page)
           // We'll construct a URL similar to fetchQueries but without pagination limits
-          let url = `http://localhost:3000/api/queries?limit=1000`;
+          let url = `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -454,7 +466,7 @@ const QueryManagementPage = () => {
 
           if (timelineActive && startDate && endDate) {
             // Use timeline endpoint instead
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000`;
+            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}`;
           }
 
           const response = await axios.get(url);
@@ -466,7 +478,7 @@ const QueryManagementPage = () => {
         // If no filters, we might want all data, but that could be a lot
         // Let's limit to 1000 most recent entries to avoid browser issues
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000`
+          `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;
@@ -519,8 +531,8 @@ const QueryManagementPage = () => {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      {/* YASHRAJ: Make sure this works properly when the component mounts */}
-      <Header title={ (selectedDivision) + " Division Query Management" }/>
+      {/* YASHRAJ: Make sure this works properly when the component mounts > DONE */}
+      <Header title={ (divisionName) + " Division Query Management" }/>
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
                 {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
@@ -773,6 +785,9 @@ const QueryManagementPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Division
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
@@ -840,6 +855,11 @@ const QueryManagementPage = () => {
                             <MapPin size={16} />
                           </button>
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
+                          {query.divisionName}
+                        </span>
                       </td>
                     </motion.tr>
                   ))}
