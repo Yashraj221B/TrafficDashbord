@@ -22,6 +22,8 @@ export default {
 
 				btnDisabled:"var(--color-button-disabled)",
 				tDisabled:"var(--color-text-disabled)",
+
+				seperationPrimary:"var(--color-primary-divider)",
 				
 			}
 		},

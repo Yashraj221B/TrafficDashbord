@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -9,10 +9,12 @@ import UsersPage from "./pages/UsersPage";
 import ChalanPage from "./pages/ChalanPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminQueryManagementPage from "./pages/AdminQueryManagementPage";
 import { AuthProvider } from "./components/auth/AuthContext";
 import { DivisionProvider } from "./contexts/DivisionContext";
 import authService from "./services/authService";
 import Backdrop from "./components/common/Backdrop";
+import DivisionWisePerformance from "./pages/DivisionWisePerformancePage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -27,32 +29,32 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("isLoggedIn") === "true";
-  });
+  const [username, setUsername] = useState('');
 
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem("username") || "";
-  });
-
+  /**
+   * Set local storage variables for later use and handle logout
+   * @param {boolean} _isLoggedIn - true is user is logged in
+   * @param {string} _username - The username
+   */
   function setLocalStorage(_isLoggedIn, _username) {
-    setIsLoggedIn(_isLoggedIn);
+
     setUsername(_username);
 
     if (_isLoggedIn) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('username', _username);
+      //localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", _username);
     } else {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('username');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('divisionId');
-      localStorage.removeItem('divisionName');
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("username");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("divisionId");
+      localStorage.removeItem("divisionName");
       authService.logout();
     }
   }
 
   // Set auth token on app load if it exists
+  // TODO: Might be the cause of auto authentication
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
@@ -63,10 +65,14 @@ function App() {
   return (
     <AuthProvider>
       <DivisionProvider>
+        {/* Background Panel */}
         <div className="flex h-screen bg-bgPrimary text-tBase overflow-hidden">
           {/* Toast notifications */}
           <Toaster position="top-right" />
 
+          {/* TODO: Rename Pages to be more appropriate */}
+          {/* Routes to all our pages */}
+          {/* Be sure to add Sidebar and Backdrop if you create a new page */}
           <Routes>
             <Route
               path="/"
@@ -87,6 +93,8 @@ function App() {
               }
             />
 
+
+            {/* Dashboard data and graphs without extra filters */}
             <Route
               path="/overview"
               element={
@@ -97,7 +105,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
 
+            {/* The actual dashboard with filters */}
             <Route
               path="/volunteers"
               element={
@@ -105,6 +115,30 @@ function App() {
                   <Backdrop />
                   <Sidebar />
                   <UsersPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* YASHRAJ: Make sure this is actually protected and you cant just "site/admin..." your way into it */}
+            {/* I have added code (Sidebar.jsx) to redirect Admin here and others there */}
+            <Route
+              path="/adminQueryManagement"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <AdminQueryManagementPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/divisionwiseperformance"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <DivisionWisePerformance />
                 </ProtectedRoute>
               }
             />

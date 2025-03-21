@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Route, Link } from 'react-router-dom';
 import trafficLogo from '../assets/traffic-police-logo.jpg';
 import authService from '../services/authService';
 import { useAuth } from '../components/auth/AuthContext';
@@ -7,23 +7,18 @@ import { useAuth } from '../components/auth/AuthContext';
 const LoginPage = ({ setter }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // errors like incorrect username/password
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    useEffect(() => {
-        // Reset authentication state when the component mounts
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('username');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('divisionId');
-        localStorage.removeItem('divisionName');
-        
+    useEffect(() => {        
         // Add title
         document.title = "Traffic Buddy - Admin Dashboard";
     }, []);
 
+    //Error handeling
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -37,22 +32,7 @@ const LoginPage = ({ setter }) => {
         setIsLoading(true);
         
         try {
-            // Check if this is the hardcoded main admin login
-            if (username === 'Admin' && password === 'trafficBuddy@123') {
-                // Main admin login - hardcoded for now
-                setter('true', "Admin");
-                
-                // Store login data
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', 'Admin');
-                localStorage.setItem('userRole', 'main_admin');
-                
-                // Set auth context
-                await login(username, password);
-                
-                navigate('/overview');
-                return;
-            }
+            console.log("Login attempt");
             
             // If not main admin, try division login via API
             const response = await authService.login(username, password);
@@ -62,7 +42,6 @@ const LoginPage = ({ setter }) => {
                 setter(true, username);
                 
                 // Store login state in localStorage
-                localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('username', username);
                 localStorage.setItem('userRole', response.role);
                 
@@ -72,8 +51,10 @@ const LoginPage = ({ setter }) => {
                 }
                 
                 // Navigate to dashboard
-                navigate('/overview');
-            } else {
+                console.log("Redirection");
+                window.location.href = "/overview";
+                
+            } else {    
                 throw new Error(response.message || 'Login failed');
             }
         } catch (error) {
@@ -85,9 +66,12 @@ const LoginPage = ({ setter }) => {
     };
 
     return (
+        // Center the login screen
         <div className='flex-1 overflow-auto relative z-10 flex items-center justify-center'>
             <div className="max-w-md w-full space-y-8 bg-bgSecondary p-8 rounded-xl shadow-lg shadow-bgPrimary border border-borderPrimary">
                 <div className="text-center">
+
+                    {/* Set Login Header */}
                     <div className="flex items-center justify-center mb-4">
                         <img 
                             src={trafficLogo} 
@@ -100,6 +84,7 @@ const LoginPage = ({ setter }) => {
                     <p className="mt-2 text-sm text-tSecondary">Enter your credentials to access the dashboard</p>
                 </div>
                 
+                {/* Login Form */}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
@@ -116,6 +101,7 @@ const LoginPage = ({ setter }) => {
                         </div>
                     )}
                     
+                    {/* Username InputField */}
                     <div className="rounded-md -space-y-px">
                         <div className="mb-5">
                             <label htmlFor="username" className="block text-sm font-medium text-tSecondary mb-1">
@@ -134,6 +120,8 @@ const LoginPage = ({ setter }) => {
                                 disabled={isLoading}
                             />
                         </div>
+
+                        {/* Password InputField */}
                         <div className="mb-5">
                             <label htmlFor="password" className="block text-sm font-medium text-tSecondary mb-1">
                                 Password
@@ -153,6 +141,7 @@ const LoginPage = ({ setter }) => {
                         </div>
                     </div>
 
+                    {/* Sign In Button */}
                     <div>
                         <button
                             type="submit"
@@ -160,7 +149,8 @@ const LoginPage = ({ setter }) => {
                             className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-tBase ${
                                 isLoading ? 'bg-hovSecondary cursor-not-allowed' : 'bg-secondary hover:bg-hovSecondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
                             } transition-colors duration-150`}
-                        >
+                        >  
+                        {/* Text Changes to Signing in on click */}
                             {isLoading ? (
                                 <>
                                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-tBase" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -176,6 +166,7 @@ const LoginPage = ({ setter }) => {
                     </div>
                 </form>
                 
+                {/* Sign In Footer */}
                 <div className="mt-6 text-center">
                     <p className="text-sm text-tDisabled">
                         Traffic Buddy Administration Portal &copy; {new Date().getFullYear()}
