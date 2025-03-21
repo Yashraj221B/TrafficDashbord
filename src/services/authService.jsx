@@ -60,6 +60,10 @@ const logout = () => {
   setToken(null);
   localStorage.removeItem('userData');
   localStorage.removeItem('authToken');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('divisionId');
+  localStorage.removeItem('divisionName');
+  localStorage.removeItem('username');
 };
 
 // Get current user data

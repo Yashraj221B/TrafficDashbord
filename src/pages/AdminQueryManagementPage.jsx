@@ -334,7 +334,7 @@ const AdminQueryManagementPage = () => {
       const formattedStartDate = startDate; // Use as is from date input
       const formattedEndDate = endDate; // Use as is from date input
       
-      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id;
+      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
 
       console.log(
         `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`

@@ -13,6 +13,14 @@ import { motion } from "framer-motion";
 import Themes, { getCurrentTheme } from "../../assets/Themes";
 import axios from "axios";
 
+const userData = JSON.parse(localStorage.getItem("userData"));
+let divisionId = "NOT_SPECIFIED";
+let divisionName = "NOT_SPECIFIED";
+if(userData && userData.role == "division_admin"){
+  divisionId = userData.divisionId;
+  divisionName = userData.divisionName;
+}
+
 const QueryTrends = () => {
   const [trendData, setTrendData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +29,7 @@ const QueryTrends = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/queries/statistics"
+          `http://localhost:3000/api/queries/division/${divisionId}/stats`
         );
         if (response.data.success && response.data.stats.recent.dailyCounts) {
           // Format data for the chart
