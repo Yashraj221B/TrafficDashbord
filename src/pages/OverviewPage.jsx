@@ -8,6 +8,8 @@ import CategoryDistributionChart from "../components/overview/CategoryDistributi
 import InfractionByDivisionChart from "../components/overview/InfractionByDivisionChart";
 import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
 
+const userData = JSON.parse(localStorage.getItem("userData"));
+
 const OverviewPage = () => {
   const backendUrl =
     import.meta.env.VITE_Backend_URL || "http://localhost:3000";
@@ -33,15 +35,26 @@ const OverviewPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        setLoading(true);
-        const [summaryRes, activityRes] = await Promise.all([
-          axios.get(`${backendUrl}/api/dashboard/summary`),
-          axios.get(`${backendUrl}/api/dashboard/recent-activity`),
-        ]);
-
-        setDashboardData(summaryRes.data.data);
-        setRecentActivity(activityRes.data.data);
-        setError(null);
+        if(userData && userData.role == "division_admin")
+        {
+          setLoading(true);
+          const [summaryRes, activityRes] = await Promise.all([
+            axios.get(`${backendUrl}/api/dashboard/summary?division=${userData.divisionId}`),
+            axios.get(`${backendUrl}/api/dashboard/recent-activity?division=${userData.divisionId}`),
+          ]);
+          setDashboardData(summaryRes.data.data);
+          setRecentActivity(activityRes.data.data);
+          setError(null);
+        }else{
+          setLoading(true);
+          const [summaryRes, activityRes] = await Promise.all([
+            axios.get(`${backendUrl}/api/dashboard/summary`),
+            axios.get(`${backendUrl}/api/dashboard/recent-activity`),
+          ]);
+            setDashboardData(summaryRes.data.data);
+            setRecentActivity(activityRes.data.data);
+            setError(null);
+        }
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
         setError("Failed to load dashboard data. Please try again later.");

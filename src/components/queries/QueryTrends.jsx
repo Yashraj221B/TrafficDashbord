@@ -3,21 +3,38 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { motion } from "framer-motion";
 import axios from "axios";
 
+const userData = JSON.parse(localStorage.getItem("userData"));
+
 const QueryTrends = () => {
     const [trendData, setTrendData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log(userData);
+            console.log(userData.divisionId);
             try {
-                const response = await axios.get('http://localhost:3000/api/queries/statistics');
-                if (response.data.success && response.data.stats.recent.dailyCounts) {
-                    // Format data for the chart
-                    const formattedData = response.data.stats.recent.dailyCounts.map(item => ({
-                        date: item._id,
-                        queries: item.count
-                    }));
-                    setTrendData(formattedData);
+                if(userData && userData.role == "division_admin" && false){
+                    const _response = await axios.get(`http://localhost:3000/api/queries/division/${userData.divisionId}/stats`);
+                    console.log(_response);
+                    if (_response.data.success && _response.data.stats.recent.dailyCounts) {
+                        // Format data for the chart
+                        const formattedData = response.data.stats.recent.dailyCounts.map(item => ({
+                            date: item._id,
+                            queries: item.count
+                        }));
+                        setTrendData(formattedData);
+                    }
+                }else{
+                    const response = await axios.get('http://localhost:3000/api/queries/statistics');
+                    if (response.data.success && response.data.stats.recent.dailyCounts) {
+                        // Format data for the chart
+                        const formattedData = response.data.stats.recent.dailyCounts.map(item => ({
+                            date: item._id,
+                            queries: item.count
+                        }));
+                        setTrendData(formattedData);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching trend data:", error);
