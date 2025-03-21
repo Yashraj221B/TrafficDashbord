@@ -523,9 +523,19 @@ const QueryManagementPage = () => {
       <Header title={ (selectedDivision) + " Division Query Management" }/>
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
+                {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+          <QueryStatusChart stats={filteredStats.byStatus} />
+          <QueryTypeDistribution stats={filteredStats.byType} />
+          <QueryTrends
+            className="lg:col-span-2"
+            timelineActive={timelineActive}
+            startDate={startDate}
+            endDate={endDate}
+          />
         {/* STATS */}
         <motion.div
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+          className="flex flex-col gap-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -556,6 +566,7 @@ const QueryManagementPage = () => {
           />
         </motion.div>
 
+        </div>
         {/* FILTERS */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
@@ -870,18 +881,6 @@ const QueryManagementPage = () => {
             </>
           )}
         </motion.div>
-
-        {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-          <QueryStatusChart stats={filteredStats.byStatus} />
-          <QueryTypeDistribution stats={filteredStats.byType} />
-          <QueryTrends
-            className="lg:col-span-2"
-            timelineActive={timelineActive}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        </div>
 
         {/* Query Details Modal */}
         {viewDetailsId && detailsData && (

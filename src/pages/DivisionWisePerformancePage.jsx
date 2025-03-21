@@ -8,7 +8,7 @@ import CategoryDistributionChart from "../components/overview/CategoryDistributi
 import InfractionByDivisionChart from "../components/overview/InfractionByDivisionChart";
 import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
 
-const OverviewPage = () => {
+const DivisionWisePerformance = () => {
   const backendUrl =
     import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 
@@ -128,48 +128,9 @@ const OverviewPage = () => {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <Header title="Traffic Buddy Dashboard" />
+      <Header title="Division Wise Performance" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
-        {/* Stats overview */}
-        {/* Top 4 pie charts  */}
-        {/* Longest animation */}
-        <motion.div
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: transitionDuration }}
-        >
-          <TwoValueRadialChart
-            name={"Pending Queries"}
-            categoryData={pendingQueriesData}
-            innerRadius={_innerRadius}
-            outerRadius={_outerRadius}
-            height={100}
-          />
-          <TwoValueRadialChart
-            name={"In Progress"}
-            categoryData={inProgressQueriesData}
-            innerRadius={_innerRadius}
-            outerRadius={_outerRadius}
-            height={100}
-          />
-          <TwoValueRadialChart
-            name={"Resolved Issues"}
-            categoryData={resolvedQueriesData}
-            innerRadius={_innerRadius}
-            outerRadius={_outerRadius}
-            height={100}
-          />
-          <TwoValueRadialChart
-            name={"Active Users"}
-            categoryData={activeUsersData}
-            innerRadius={_innerRadius}
-            outerRadius={_outerRadius}
-            height={100}
-          />
-        </motion.div>
-
         {/* Total queries count */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
@@ -197,11 +158,7 @@ const OverviewPage = () => {
             delay: transitionDelay * 2,
           }}
         >
-          <LineGraph data={queriesPerDayData} name={"Reports Per Day"} />
-          <CategoryDistributionChart
-            categoryData={queryTypesData}
-            name={"Report Categories"}
-          />
+          <InfractionByDivisionChart showPercentage={false}/>
           <InfractionByDivisionChart showPercentage={true}/>
         </motion.div>
 
@@ -295,4 +252,4 @@ const OverviewPage = () => {
   );
 };
 
-export default OverviewPage;
+export default DivisionWisePerformance;
