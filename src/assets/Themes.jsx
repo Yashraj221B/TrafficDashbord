@@ -35,8 +35,8 @@ const Themes = {
 
     "COLORS":  ["#dd4c5f", 
       "#fffc88", 
-      "#8a063c", 
       "#59c095", 
+      "#8a063c", 
       "#fdb561", 
       "#669dbc", 
       "#a47f51", 

@@ -39,6 +39,12 @@ const Sidebar = () => {
         color: "#10B981",
         href: "/chalan",
       });
+      items.push({
+        name: "Division Wise Performance",
+        icon: Users,
+        color: "#10B981",
+        href: "/divisionwiseperformance",
+      });
     }
 
     // Everyone gets access to settings

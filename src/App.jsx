@@ -14,6 +14,7 @@ import { AuthProvider } from "./components/auth/AuthContext";
 import { DivisionProvider } from "./contexts/DivisionContext";
 import authService from "./services/authService";
 import Backdrop from "./components/common/Backdrop";
+import DivisionWisePerformance from "./pages/DivisionWisePerformancePage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -104,6 +105,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
 
             {/* The actual dashboard with filters */}
             <Route
@@ -126,6 +128,17 @@ function App() {
                   <Backdrop />
                   <Sidebar />
                   <AdminQueryManagementPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/divisionwiseperformance"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <DivisionWisePerformance />
                 </ProtectedRoute>
               }
             />

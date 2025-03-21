@@ -17,9 +17,14 @@ const Profile = () => {
 				</div>
 			</div>
 
-			<button className='bg-indigo-600 hover:bg-indigo-700 text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
+<div className="flex flex-row gap-3">
+			<button className='bg-secondary hover:bg-hovSecondary text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
 				Edit Profile
 			</button>
+			<button className='bg-red-600 hover:bg-red-700 text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
+				LogOut
+			</button>
+			</div>
 		</SettingSection>
 	);
 };
