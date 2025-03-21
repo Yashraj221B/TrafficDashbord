@@ -52,7 +52,7 @@ const LoginPage = ({ setter }) => {
                 
                 // Navigate to dashboard
                 console.log("Redirection");
-                navigate('/overview', { replace: true });
+                //navigate('/overview', { replace: true });
                 window.location.href = "/overview";
                 
             } else {    
