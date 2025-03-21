@@ -1,5 +1,6 @@
 import { User } from "lucide-react";
 import SettingSection from "./SettingSection";
+import authService from "../../services/authService";
 
 const Profile = () => {
 	return (
@@ -21,7 +22,7 @@ const Profile = () => {
 			<button className='bg-secondary hover:bg-hovSecondary text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
 				Edit Profile
 			</button>
-			<button className='bg-red-600 hover:bg-red-700 text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
+			<button onClick={() => {authService.logout();window.location.reload()}} className='bg-red-600 hover:bg-red-700 text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
 				LogOut
 			</button>
 			</div>
