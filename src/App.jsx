@@ -16,6 +16,7 @@ import authService from "./services/authService";
 import Backdrop from "./components/common/Backdrop";
 import DivisionWisePerformance from "./pages/DivisionWisePerformancePage";
 import UserManagementPage from "./pages/UserManagementPage";
+import AdminOverviewPage from "./pages/AdminOverviewPage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -101,6 +102,20 @@ function App() {
                   <Backdrop />
                   <Sidebar />
                   <OverviewPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin-only route */}
+            <Route
+              path="/adminoverview"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <Backdrop />
+                    <Sidebar />
+                    <AdminOverviewPage />
+                  </AdminRoute>
                 </ProtectedRoute>
               }
             />

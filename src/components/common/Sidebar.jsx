@@ -35,7 +35,7 @@ const Sidebar = () => {
         name: "Overview",
         icon: BarChart2,
         color: "#6366f1",
-        href: "/overview",
+        href: isMainAdmin?"/adminoverview":"/overview",
       },
       {
         name: "Query Management",

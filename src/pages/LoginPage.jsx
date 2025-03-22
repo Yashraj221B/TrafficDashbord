@@ -53,6 +53,7 @@ const LoginPage = ({ setter }) => {
                 // Navigate to dashboard
                 console.log("Redirection");
                 //navigate('/overview', { replace: true });
+                //isMainAdmin?"/adminoverview":"/overview" do this here aswell YASHRAJ
                 window.location.href = "/overview";
                 
             } else {    
