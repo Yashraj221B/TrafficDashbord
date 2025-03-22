@@ -1,13 +1,14 @@
 import { BarChart2, Menu, Settings, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMainAdmin, setIsMainAdmin] = useState(false);
   const [divisionName, setDivisionName] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
     // Make the API call inside useEffect
@@ -64,9 +65,9 @@ const Sidebar = () => {
     // Everyone gets access to settings
     items.push({
       name: "Settings",
-      icon: Settings,
-      color: "#6EE7B7",
-      href: "/settings",
+        icon: Settings,
+        color: "#6EE7B7",
+        href: "/settings",
     });
 
     return items;
@@ -118,7 +119,9 @@ const Sidebar = () => {
           {SIDEBAR_ITEMS.map((item) => (
             <Link key={item.name} to={item.href}>
               <motion.div
-                className="flex items-center p-3 mb-1 rounded-lg transition-colors hover:bg-primary group"
+                className={`flex items-center p-3 mb-1 rounded-lg transition-colors hover:bg-primary group ${
+                  location.pathname === item.href ? "bg-primary" : ""
+                }`}
                 whileHover={{ x: 5 }}
               >
                 <item.icon

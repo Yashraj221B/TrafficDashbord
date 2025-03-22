@@ -7,6 +7,8 @@ import LineGraph from "../components/overview/lineGraph";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import InfractionByDivisionChart from "../components/overview/InfractionByDivisionChart";
 import TwoValueRadialChart from "../components/overview/TwoValueRadialChart";
+import StatCard from "../components/common/StatCard";
+import { FileSearch2 } from "lucide-react";
 
 const userData = JSON.parse(localStorage.getItem("userData"));
 
@@ -97,11 +99,11 @@ const OverviewPage = () => {
     },
   ];
 
-  const activeUsersData = [
-    { name: "Active Sessions", value: dashboardData.activeSessions },
+  const rejectedQueriesData = [
+    { name: "Rejected", value: dashboardData.queryStatus.rejected },
     {
-      name: "Total Users",
-      value: dashboardData.userCount - dashboardData.activeSessions,
+      name: "Total",
+      value: dashboardData.totalQueries - dashboardData.queryStatus.rejected,
     },
   ];
 
@@ -154,14 +156,14 @@ const OverviewPage = () => {
           transition={{ duration: transitionDuration }}
         >
           <TwoValueRadialChart
-            name={"Pending Queries"}
+            name={"Pending Issues"}
             categoryData={pendingQueriesData}
             innerRadius={_innerRadius}
             outerRadius={_outerRadius}
             height={100}
           />
           <TwoValueRadialChart
-            name={"In Progress"}
+            name={"In Progress Issues"}
             categoryData={inProgressQueriesData}
             innerRadius={_innerRadius}
             outerRadius={_outerRadius}
@@ -175,8 +177,8 @@ const OverviewPage = () => {
             height={100}
           />
           <TwoValueRadialChart
-            name={"Active Users"}
-            categoryData={activeUsersData}
+            name={"Rejected Issues"}
+            categoryData={rejectedQueriesData}
             innerRadius={_innerRadius}
             outerRadius={_outerRadius}
             height={100}
@@ -215,9 +217,9 @@ const OverviewPage = () => {
             categoryData={queryTypesData}
             name={"Report Categories"}
           />
-          <InfractionByDivisionChart showPercentage={true}/>
         </motion.div>
 
+        {/* YASHRAJ: Recent acticity should be only on current division */}
         {/* Recent Activity Graph */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lgshadow-bgPrimary rounded-xl p-6 border border-borderPrimary"

@@ -22,31 +22,58 @@ import QueryTrends from "../components/queries/QueryTrends";
 
 const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 
-// TODO for PARAS (FRONTEND DEV): 
+// TODO for PARAS (FRONTEND DEV):
 /*
-  1. Clear the currently selected division when the timeline filter is cleared using clear button
-  2. Close the dialog box when the "record" is marked as resolved/rejected/(smthg else) [NOT COMPULSORY - but good to have ig, it's up to you]
-  3. Keep the filter state when smthg is marked as resolved/pending (basically status is changed) - currently it resets the filter and displays all the entries
-  4. Set from and to date by default
-  - In case it's a backend issue, let me know, I'll fix it from my end
+  1. [x] Clear the currently selected division when the timeline filter is cleared using clear button
+  2. [will do when raviraj is done working on that page] Close the dialog box when the "record" is marked as resolved/rejected/(smthg else) [NOT COMPULSORY - but good to have ig, it's up to you]
+  3. [will do when raviraj is done working on that page] fmKeep the filter state when smthg is marked as resolved/pending (basically status is changed) - currently it resets the filter and displays all the entries
 */
 
 const divisions = [
-  { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
-  { value: "CHAKAN", label: "Chakan", id:"67dc019a6532e1c784d60840"},
-  { value: "DIGHI ALANDI", label: "Dighi-Alandi", id:"67db077dfa28812fe4f9573f"},
-  { value: "BHOSARI", label: "Bhosari", id:"67dc19f0a9ae16de2619b735"},
-  { value: "TALWADE", label: "Talwade", id:"67dac59365aca82fe28bb003"},
-  { value: "PIMPRI", label: "Pimpri", id:"67dc18f0a9ae16de2619b72c" },
-  { value: "CHINCHWAD", label: "Chinchwad", id:"67dc1a41a9ae16de2619b739"},
-  { value: "NIGDI", label: "Nigdi", id:"67dc184da9ae16de2619b728"},
-  { value: "SANGAVI", label: "Sangavi", id:"67dc198ea9ae16de2619b731"},
-  { value: "HINJEWADI", label: "Hinjewadi", id:"67dc19b7a9ae16de2619b733"},
-  { value: "WAKAD", label: "Wakad", id:"67dc189fa9ae16de2619b72a"},
-  { value: "BAVDHAN", label: "Bavdhan", id:"67dc1969a9ae16de2619b72f"},
-  { value: "DEHUROAD", label: "Dehuroad", id:"67dc1a22a9ae16de2619b737"},
-  { value: "TALEGAON", label: "Talegaon", id:"67dac3e9bb20f51c531c1509"},
+  { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },
+  { value: "CHAKAN", label: "Chakan", id: "67dc019a6532e1c784d60840" },
+  {
+    value: "DIGHI ALANDI",
+    label: "Dighi-Alandi",
+    id: "67db077dfa28812fe4f9573f",
+  },
+  { value: "BHOSARI", label: "Bhosari", id: "67dc19f0a9ae16de2619b735" },
+  { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
+  { value: "PIMPRI", label: "Pimpri", id: "67dc18f0a9ae16de2619b72c" },
+  { value: "CHINCHWAD", label: "Chinchwad", id: "67dc1a41a9ae16de2619b739" },
+  { value: "NIGDI", label: "Nigdi", id: "67dc184da9ae16de2619b728" },
+  { value: "SANGAVI", label: "Sangavi", id: "67dc198ea9ae16de2619b731" },
+  { value: "HINJEWADI", label: "Hinjewadi", id: "67dc19b7a9ae16de2619b733" },
+  { value: "WAKAD", label: "Wakad", id: "67dc189fa9ae16de2619b72a" },
+  { value: "BAVDHAN", label: "Bavdhan", id: "67dc1969a9ae16de2619b72f" },
+  { value: "DEHUROAD", label: "Dehuroad", id: "67dc1a22a9ae16de2619b737" },
+  { value: "TALEGAON", label: "Talegaon", id: "67dac3e9bb20f51c531c1509" },
 ];
+
+function setTodayDate(setEndDate){
+  
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+
+  today = yyyy + "-" + mm + "-" + dd;
+  setEndDate(today);
+}
+
+function setDateXDaysAgo(setEndDate, x){
+
+  var today = new Date();
+  today.setDate(today.getDate() - x);
+
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+
+  today = yyyy + "-" + mm + "-" + dd;
+  setEndDate(today);
+}
+
 
 const AdminQueryManagementPage = () => {
   const [startDate, setStartDate] = useState("");
@@ -108,11 +135,17 @@ const AdminQueryManagementPage = () => {
   const [detailsData, setDetailsData] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
 
+  //Runs whenever page mounts
   useEffect(() => {
     fetchQueryStats();
     if (!timelineActive) {
       fetchQueries();
     }
+    setSelectedDivison("All Divisions");
+    setTodayDate(setEndDate);
+    setDateXDaysAgo(setStartDate, 30);
+    setTimelineActive(true);
+
   }, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive]);
 
   // Update filtered stats whenever queries change
@@ -122,9 +155,7 @@ const AdminQueryManagementPage = () => {
 
   const fetchQueryStats = async () => {
     try {
-      const response = await axios.get(
-        `${backendUrl}/api/queries/statistics`
-      );
+      const response = await axios.get(`${backendUrl}/api/queries/statistics`);
       if (response.data.success) {
         setQueryStats(response.data.stats);
         // Initially set filtered stats to be the same as all stats
@@ -233,9 +264,7 @@ const AdminQueryManagementPage = () => {
 
   const fetchQueryDetails = async (id) => {
     try {
-      const response = await axios.get(
-        `${backendUrl}/api/queries/${id}`
-      );
+      const response = await axios.get(`${backendUrl}/api/queries/${id}`);
       if (response.data.success) {
         setDetailsData(response.data.data);
         setViewDetailsId(id);
@@ -344,13 +373,13 @@ const AdminQueryManagementPage = () => {
       // Format dates with timezone consideration
       const formattedStartDate = startDate; // Use as is from date input
       const formattedEndDate = endDate; // Use as is from date input
-      
-      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
+
+      const divisionId =
+        divisions.find((d) => d.value === selectedDivision)?.id || "";
 
       console.log(
         `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`
       );
-
 
       const response = await axios.get(
         `${backendUrl}/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
@@ -374,9 +403,10 @@ const AdminQueryManagementPage = () => {
   };
 
   const clearTimelineFilter = () => {
-    setStartDate("");
-    setEndDate("");
-    setTimelineActive(false);
+    setTodayDate(setEndDate);
+    setDateXDaysAgo(setStartDate, 30);
+    setSelectedDivison("All Divisions");
+    setTimelineActive(true);
     fetchQueries(); // Go back to regular query fetching
   };
 
@@ -531,8 +561,8 @@ const AdminQueryManagementPage = () => {
       <Header title="Query Management" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
-                {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           <QueryStatusChart stats={filteredStats.byStatus} />
           <QueryTypeDistribution stats={filteredStats.byType} />
           <QueryTrends
@@ -541,39 +571,38 @@ const AdminQueryManagementPage = () => {
             startDate={startDate}
             endDate={endDate}
           />
-        {/* STATS */}
-        <motion.div
-          className="flex flex-col gap-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <StatCard
-            name="Total Queries"
-            icon={FileSearch}
-            value={filteredStats.total.toLocaleString()}
-            color="#6366F1"
-          />
-          <StatCard
-            name="Pending Queries"
-            icon={Clock}
-            value={filteredStats.byStatus?.pending || 0}
-            color="#F59E0B"
-          />
-          <StatCard
-            name="In Progress"
-            icon={AlertTriangle}
-            value={filteredStats.byStatus?.inProgress || 0}
-            color="#3B82F6"
-          />
-          <StatCard
-            name="Resolved"
-            icon={Check}
-            value={filteredStats.byStatus?.resolved || 0}
-            color="#10B981"
-          />
-        </motion.div>
-
+          {/* STATS */}
+          <motion.div
+            className="flex flex-col gap-4 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <StatCard
+              name="Total Queries"
+              icon={FileSearch}
+              value={filteredStats.total.toLocaleString()}
+              color="#6366F1"
+            />
+            <StatCard
+              name="Pending Queries"
+              icon={Clock}
+              value={filteredStats.byStatus?.pending || 0}
+              color="#F59E0B"
+            />
+            <StatCard
+              name="In Progress"
+              icon={AlertTriangle}
+              value={filteredStats.byStatus?.inProgress || 0}
+              color="#3B82F6"
+            />
+            <StatCard
+              name="Resolved"
+              icon={Check}
+              value={filteredStats.byStatus?.resolved || 0}
+              color="#10B981"
+            />
+          </motion.div>
         </div>
 
         {/* FILTERS */}
