@@ -20,6 +20,16 @@ import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
+// TODO for PARAS (FRONTEND DEV): 
+/*
+  1. Clear the currently selected division when the timeline filter is cleared using clear button
+  2. Close the dialog box when the "record" is marked as resolved/rejected/(smthg else) [NOT COMPULSORY - but good to have ig, it's up to you]
+  3. Keep the filter state when smthg is marked as resolved/pending (basically status is changed) - currently it resets the filter and displays all the entries
+  - In case it's a backend issue, let me know, I'll fix it from my end
+*/
+
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
   { value: "CHAKAN", label: "Chakan", id:"67dc019a6532e1c784d60840"},
@@ -112,7 +122,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueryStats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/queries/statistics"
+        `${backendUrl}/api/queries/statistics`
       );
       if (response.data.success) {
         setQueryStats(response.data.stats);
@@ -192,7 +202,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20`;
+      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -223,7 +233,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueryDetails = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/${id}`
+        `${backendUrl}/api/queries/${id}`
       );
       if (response.data.success) {
         setDetailsData(response.data.data);
@@ -236,7 +246,7 @@ const AdminQueryManagementPage = () => {
 
   const updateQueryStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:3000/api/queries/${id}/status`, {
+      await axios.put(`${backendUrl}/api/queries/${id}/status`, {
         status: newStatus,
       });
 
@@ -267,11 +277,11 @@ const AdminQueryManagementPage = () => {
       const queryId = selectedQueryForEmail._id || selectedQueryForEmail.id;
 
       console.log(
-        `Making request to: http://localhost:3000/api/queries/${queryId}/notify-department`
+        `Making request to: ${backendUrl}/api/queries/${queryId}/notify-department`
       );
 
       const response = await axios.post(
-        `http://localhost:3000/api/queries/${queryId}/notify-department`,
+        `${backendUrl}/api/queries/${queryId}/notify-department`,
         {
           email: departmentEmail,
           departmentName: departmentName,
@@ -342,7 +352,7 @@ const AdminQueryManagementPage = () => {
 
 
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
+        `${backendUrl}/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -436,7 +446,7 @@ const AdminQueryManagementPage = () => {
         } else {
           // For larger datasets, make a dedicated API call to get all matching data (not just current page)
           // We'll construct a URL similar to fetchQueries but without pagination limits
-          let url = `http://localhost:3000/api/queries?limit=1000`;
+          let url = `${backendUrl}/api/queries?limit=1000`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
