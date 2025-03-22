@@ -91,9 +91,8 @@ const UserManagementPage = () => {
     await closeChangeUserPopUp();
   }
 
-  const applyEdits = async () =>{
-    console.log("Applying changes");
-    console.log(officerObject);
+  const applyEdits = async (adwfgh) =>{
+    console.log(adwfgh);
     await closeChangeUserPopUp();
   }
 
@@ -103,7 +102,9 @@ const UserManagementPage = () => {
   };
   
   const closeEditUserPopUp = async () => {
-    setViewEditUserId(null);
+      console.log("Closing");
+    await setViewEditUserId(null);
+    console.log("Closed");
   };
 
   const formatDate = (dateString) => {
@@ -178,7 +179,7 @@ const UserManagementPage = () => {
                 <tbody className="divide-y divide-seperationSecondary">
                   {queries.map((query) => (
                     <motion.tr
-                      // key={query._id}
+                      key={query.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}

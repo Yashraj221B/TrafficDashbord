@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 const defaultOfficerObject = {
   name: "",
@@ -14,6 +15,29 @@ const UserEdit = ({
   closeFunc,
   officerObject = defaultOfficerObject,
 }) => {
+  const [editedOfficer, setEditedOfficer] = useState(officerObject);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedOfficer((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handlePhoneChange = (index, value) => {
+    const newPhone = [...editedOfficer.phone];
+    newPhone[index] = value;
+    setEditedOfficer((prev) => ({
+      ...prev,
+      phone: newPhone,
+    }));
+  };
+
+  const handleSubmit = () => {
+    applyChangesFunc(editedOfficer);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <motion.div
@@ -31,7 +55,7 @@ const UserEdit = ({
           </h2>
           <button
             className="text-gray-400 hover:text-tBase"
-            onClick={applyChangesFunc}
+            onClick={closeFunc}
           >
             <X className="h-6 w-6" />
           </button>
@@ -41,7 +65,7 @@ const UserEdit = ({
             <div className="flex flex-col">
                 <div className="flex flex-col items-center mr-6">
               <div className="h-32 w-32 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-4xl text-tBase font-semibold">
-                {officerObject.name.charAt(0) || "U"}
+                {editedOfficer.name.charAt(0) || "U"}
               </div>
               <button className="mt-4 bg-blue-600 w-48 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200">
                 Change Profile Picture
@@ -52,8 +76,10 @@ const UserEdit = ({
                       Division
                     </label>
                     <select
+                        name="division"
                         className="w-48 bg-primary text-tBase rounded-md py-2 px-4  focus:outline-none focus:ring-2 focus:ring-secondary"
-                        defaultValue={officerObject.division}
+                        value={editedOfficer.division}
+                        onChange={handleChange}
                     >
                         <option value="Choose Division" disabled>
                         Choose Division
@@ -73,7 +99,9 @@ const UserEdit = ({
                 </label>
                 <input
                   type="text"
-                  defaultValue={officerObject.name}
+                  name="name"
+                  value={editedOfficer.name}
+                  onChange={handleChange}
                   placeholder="Enter name"
                   className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                 />
@@ -85,13 +113,15 @@ const UserEdit = ({
                   </label>
                   <input
                     type="text"
-                    defaultValue={officerObject.phone[0]}
+                    value={editedOfficer.phone[0]}
+                    onChange={(e) => handlePhoneChange(0, e.target.value)}
                     placeholder="Enter phone number"
                     className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                   />
                   <input
                     type="text"
-                    defaultValue={officerObject.phone[1]}
+                    value={editedOfficer.phone[1]}
+                    onChange={(e) => handlePhoneChange(1, e.target.value)}
                     placeholder="Enter phone number"
                     className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                   />
@@ -102,7 +132,9 @@ const UserEdit = ({
                   </label>
                   <input
                     type="text"
-                    defaultValue={officerObject.post}
+                    name="post"
+                    value={editedOfficer.post}
+                    onChange={handleChange}
                     placeholder="Enter post"
                     className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                   />
@@ -115,7 +147,9 @@ const UserEdit = ({
                 </label>
                 <input
                   type="text"
-                  defaultValue={officerObject.email}
+                  name="email"
+                  value={editedOfficer.email}
+                  onChange={handleChange}
                   placeholder="Enter email"
                   className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                 />
@@ -127,7 +161,7 @@ const UserEdit = ({
         <div className="mt-6">
           <button
             className="w-full bg-blue-600 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200"
-            onClick={closeFunc}
+            onClick={() => handleSubmit({editedOfficer})}
           >
             Apply Changes
           </button>
