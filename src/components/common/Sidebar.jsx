@@ -34,7 +34,7 @@ const Sidebar = () => {
     // Only main admin gets access to User Management
     if (isMainAdmin) {
       items.push({
-        name: "User Management",
+        name: "Volunteer Management",
         icon: Users,
         color: "#10B981",
         href: "/chalan",
@@ -44,6 +44,12 @@ const Sidebar = () => {
         icon: Users,
         color: "#10B981",
         href: "/divisionwiseperformance",
+      });
+      items.push({
+        name: "User Management",
+        icon: Users,
+        color: "#10B981",
+        href: "/usermanagement",
       });
     }
 

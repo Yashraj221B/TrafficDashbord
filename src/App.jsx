@@ -15,6 +15,7 @@ import { DivisionProvider } from "./contexts/DivisionContext";
 import authService from "./services/authService";
 import Backdrop from "./components/common/Backdrop";
 import DivisionWisePerformance from "./pages/DivisionWisePerformancePage";
+import UserManagementPage from "./pages/UserManagementPage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -29,7 +30,7 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   /**
    * Set local storage variables for later use and handle logout
@@ -37,7 +38,6 @@ function App() {
    * @param {string} _username - The username
    */
   function setLocalStorage(_isLoggedIn, _username) {
-
     setUsername(_username);
 
     if (_isLoggedIn) {
@@ -93,7 +93,6 @@ function App() {
               }
             />
 
-
             {/* Dashboard data and graphs without extra filters */}
             <Route
               path="/overview"
@@ -105,7 +104,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
 
             {/* The actual dashboard with filters */}
             <Route
@@ -152,6 +150,20 @@ function App() {
                     <Backdrop />
                     <Sidebar />
                     <ChalanPage />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin-only route */}
+            <Route
+              path="/usermanagement"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <Backdrop />
+                    <Sidebar />
+                    <UserManagementPage />
                   </AdminRoute>
                 </ProtectedRoute>
               }
