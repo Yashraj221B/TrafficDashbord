@@ -4,7 +4,8 @@ import { useState } from "react";
 
 const defaultOfficerObject = {
   name: "",
-  phone: ["", ""],
+  phone: "",
+  alternate_phone: "",
   email: "",
   post: "",
   division: "Choose Division",
@@ -26,16 +27,21 @@ const UserEdit = ({
   };
 
   const handlePhoneChange = (index, value) => {
-    const newPhone = [...editedOfficer.phone];
-    newPhone[index] = value;
-    setEditedOfficer((prev) => ({
-      ...prev,
-      phone: newPhone,
-    }));
+    if (index === 0 && value !== "") {
+      setEditedOfficer((prev) => ({
+        ...prev,
+        phone: value,
+      }));
+    } else if (index === 1 && value !== "") {
+      setEditedOfficer((prev) => ({
+        ...prev,
+        alternate_phone: value,
+      }));
+    }
   };
 
   const handleSubmit = () => {
-    applyChangesFunc(editedOfficer);
+    applyChangesFunc(editedOfficer, officerObject === defaultOfficerObject ? editedOfficer.division : officerObject.divisionId);
   };
 
   return (
@@ -63,31 +69,42 @@ const UserEdit = ({
         <div className="flex">
           <div>
             <div className="flex flex-col">
-                <div className="flex flex-col items-center mr-6">
-              <div className="h-32 w-32 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-4xl text-tBase font-semibold">
-                {editedOfficer.name.charAt(0) || "U"}
-              </div>
-              <button className="mt-4 bg-blue-600 w-48 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200">
-                Change Profile Picture
-              </button>
+              <div className="flex flex-col items-center mr-6">
+                <div className="h-32 w-32 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-4xl text-tBase font-semibold">
+                  {editedOfficer.name.charAt(0) || "U"}
+                </div>
+                <button className="mt-4 bg-blue-600 w-48 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200">
+                  Change Profile Picture
+                </button>
               </div>
               <div className="flex flex-col mt-4">
-                    <label className="block text-sm font-medium text-gray-400 mb-1">
-                      Division
-                    </label>
-                    <select
-                        name="division"
-                        className="w-48 bg-primary text-tBase rounded-md py-2 px-4  focus:outline-none focus:ring-2 focus:ring-secondary"
-                        value={editedOfficer.division}
-                        onChange={handleChange}
-                    >
-                        <option value="Choose Division" disabled>
-                        Choose Division
-                        </option>
-                        <option value="DIGHI-ALANDI">DIGHI-ALANDI</option>
-                        <option value="CHAKAN">CHAKAN</option>
-                        <option value="PIMPRI">PIMPRI</option>
-                    </select>
+                <label className="block text-sm font-medium text-gray-400 mb-1">
+                  Division
+                </label>
+                <select
+                  name="division"
+                  className="w-48 bg-primary text-tBase rounded-md py-2 px-4  focus:outline-none focus:ring-2 focus:ring-secondary"
+                  value={editedOfficer.division}
+                  onChange={handleChange}
+                >
+                  <option value="Choose Division" disabled>
+                    Choose Division
+                  </option>
+                  <option value="67dac1a2a771ed87f82890b2">Mahalunge</option>
+                  <option value="67dc019a6532e1c784d60840">Chakan</option>
+                  <option value="67db077dfa28812fe4f9573f">Dighi-Alandi</option>
+                  <option value="67dc19f0a9ae16de2619b735">Bhosari</option>
+                  <option value="67dac59365aca82fe28bb003">Talwade</option>
+                  <option value="67dc18f0a9ae16de2619b72c">Pimpri</option>
+                  <option value="67dc1a41a9ae16de2619b739">Chinchwad</option>
+                  <option value="67dc184da9ae16de2619b728">Nigdi</option>
+                  <option value="67dc198ea9ae16de2619b731">Sangavi</option>
+                  <option value="67dc19b7a9ae16de2619b733">Hinjewadi</option>
+                  <option value="67dc189fa9ae16de2619b72a">Wakad</option>
+                  <option value="67dc1969a9ae16de2619b72f">Bavdhan</option>
+                  <option value="67dc1a22a9ae16de2619b737">Dehuroad</option>
+                  <option value="67dac3e9bb20f51c531c1509">Talegaon</option>
+                </select>
               </div>
             </div>
           </div>
@@ -113,14 +130,14 @@ const UserEdit = ({
                   </label>
                   <input
                     type="text"
-                    value={editedOfficer.phone[0]}
+                    value={editedOfficer.phone}
                     onChange={(e) => handlePhoneChange(0, e.target.value)}
                     placeholder="Enter phone number"
                     className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
                   />
                   <input
                     type="text"
-                    value={editedOfficer.phone[1]}
+                    value={editedOfficer.alternate_phone}
                     onChange={(e) => handlePhoneChange(1, e.target.value)}
                     placeholder="Enter phone number"
                     className="w-full bg-primary text-tBase rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-secondary"
@@ -161,7 +178,7 @@ const UserEdit = ({
         <div className="mt-6">
           <button
             className="w-full bg-blue-600 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200"
-            onClick={() => handleSubmit({editedOfficer})}
+            onClick={() => handleSubmit({ editedOfficer })}
           >
             Apply Changes
           </button>
