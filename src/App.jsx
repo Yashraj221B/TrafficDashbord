@@ -106,6 +106,7 @@ function App() {
               }
             />
 
+            {/* Admin-only route */}
             <Route
               path="/adminoverview"
               element={
