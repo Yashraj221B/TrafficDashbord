@@ -7,26 +7,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import UserEdit from "../components/userManagement/userEdit";
 
-const queries = [
-  {
-    user_name: "Videsh Gupta",
-    status: "On Duty",
-    region: "DIGHI-ALANDI",
-    post: "Sub inspector",
-  },
-  {
-    user_name: "Pranali Sinha",
-    status: "Off Duty",
-    region: "CHAKAN",
-    post: "Sub inspector",
-  },
-  {
-    user_name: "Mahesh Roy",
-    status: "On Duty",
-    region: "PIMPRI",
-    post: "traffic havaldar",
-  },
-];
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
+// API ENDPOINT = http://localhost:3000/api/users/current-officer/
 
 const UserManagementPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,21 +23,31 @@ const UserManagementPage = () => {
   const [userData, setUserData] = useState(null);
 
   const [viewChangeUser, setViewChangeUser] = useState(false);
-
-  console.log("ChalanPage rendering");
-
-  const [joinRequests, setJoinRequests] = useState([]);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [broadcastMessage, setBroadcastMessage] = useState("");
-  const [broadcastArea, setBroadcastArea] = useState("");
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [queries, setQueries] = useState([]);
 
   // API base URL - can be moved to environment variable
-  const API_BASE_URL = "http://localhost:3000/api";
+  const API_BASE_URL = `${backendUrl}/api`;
 
   useEffect(() => {
     console.log("UserManagementPage mounted");
-    setLoading(false);
+    const fetchOfficerData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/users/current-officer/`);
+        setQueries(response.data.officers);
+        setTotalPages(1);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError("Failed to load dashboard data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOfficerData();
     return () => {
       console.log("UserManagementPage unmounted");
     };
@@ -73,12 +66,17 @@ const UserManagementPage = () => {
   };
 
   const fetchUserDetails = async () => {
+    // const response = await axios.get(`${API_BASE_URL}/user/`);
+    // API ENDPOINT = http://localhost:3000/api/users/current-officer/:divisionId
     setUserData({
-        name:"Videsh Mahesh Gupta",
-        phone:["+91-786541235","+91-1652189876"],
-        email:"subInspector@dighiAlandi.com",
-        post:"Sub Inspector",
-        division:"DIGHI-ALANDI",
+      "_id": "67def1e9067649f8b9366f65",
+      "name": "Officer A3",
+      "phone": ["+917000000003","+917000000004"],
+      "email": "a3@mahalunge.com",
+      "isActive": true,
+      "joinedAt": "2023-12-10T00:00:00.000Z",
+      "relievedAt": null,
+      "status": "active"
     });
     setViewEditUserId("2");
   };
@@ -92,15 +90,45 @@ const UserManagementPage = () => {
   const applyUserChanges = async () =>{
     await closeChangeUserPopUp();
   }
+
+  const applyEdits = async () =>{
+    console.log("Applying changes");
+    console.log(officerObject);
+    await closeChangeUserPopUp();
+  }
+
   const closeDetails = () => {
     setViewDetailsId(null);
     setDetailsData(null);
+  };
+  
+  const closeEditUserPopUp = async () => {
+    setViewEditUserId(null);
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString();
   };
+
+  if (loading) {
+    return (
+      <div className="flex-1 overflow-auto relative z-10 flex items-center justify-center">
+        <div className="text-tBase text-xl">Loading dashboard data...</div>
+      </div>
+    );
+  }
+
+  // Show error text
+  if (error) {
+    return (
+      <div className="flex-1 overflow-auto relative z-10 flex items-center justify-center">
+        <div className="bg-red-800 bg-opacity-50 backdrop-blur-md p-5 rounded-lg text-tBase">
+          {error}
+        </div>
+      </div>
+  );
+  }
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
@@ -150,7 +178,7 @@ const UserManagementPage = () => {
                 <tbody className="divide-y divide-seperationSecondary">
                   {queries.map((query) => (
                     <motion.tr
-                      key={query._id}
+                      // key={query._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -159,29 +187,30 @@ const UserManagementPage = () => {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-8 w-8">
                             <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-tBase font-semibold">
-                              {query.user_name?.charAt(0) || "U"}
+                              {"U"}
                             </div>
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-tBase">
-                              {query.user_name}
+                              {query.currentOfficer.name}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                          {query.region}
+                          {query.divisionName}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-300 max-w-xs truncate">
-                          {query.status}
+                          {query.currentOfficer.status}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-300 max-w-xs truncate">
-                          {query.post}
+                          {/* TODO => NEED TO UPDATE THE COLLECTION SCHEMA (ADD OFFICER POST) */}
+                          Sub Inspector
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -371,7 +400,7 @@ const UserManagementPage = () => {
       {/* Edit User Modal */}
       {viewEditUserId && userData &&(
         // YASHRAJ: Fetch and set officerObject
-        <UserEdit applyChangesFunc={applyUserChanges} closeFunc={closeChangeUserPopUp} officerObject={userData}/>
+        <UserEdit applyChangesFunc={applyEdits} closeFunc={closeEditUserPopUp} officerObject={userData}/>
       )}
 
       {/* Add User Modal */}

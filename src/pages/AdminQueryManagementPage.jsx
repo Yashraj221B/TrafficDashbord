@@ -27,6 +27,7 @@ const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
   1. Clear the currently selected division when the timeline filter is cleared using clear button
   2. Close the dialog box when the "record" is marked as resolved/rejected/(smthg else) [NOT COMPULSORY - but good to have ig, it's up to you]
   3. Keep the filter state when smthg is marked as resolved/pending (basically status is changed) - currently it resets the filter and displays all the entries
+  4. Set from and to date by default
   - In case it's a backend issue, let me know, I'll fix it from my end
 */
 
