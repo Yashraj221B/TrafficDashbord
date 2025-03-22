@@ -36,7 +36,9 @@ const UserManagementPage = () => {
     const fetchOfficerData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/users/current-officer/`);
+        const response = await axios.get(
+          `${API_BASE_URL}/users/current-officer/`
+        );
         setQueries(response.data.officers);
         setTotalPages(1);
         setError(null);
@@ -46,38 +48,35 @@ const UserManagementPage = () => {
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchOfficerData();
     return () => {
       console.log("UserManagementPage unmounted");
     };
   }, []);
 
-  const fetchQueryDetails = async () => {
-    setDetailsData({
-      user_name: "Videsh Mahesh Gupta",
-      status: "On Duty",
-      region: "PIMPRI",
-      post: "traffic havaldar",
-      user_id: "09876543",
-      subregion: "SMTH",
-    });
-    setViewDetailsId("2");
-  };
+  // const fetchQueryDetails = async () => {
+  //   setDetailsData({
+  //     user_name: "Videsh Mahesh Gupta",
+  //     status: "On Duty",
+  //     region: "PIMPRI",
+  //     post: "traffic havaldar",
+  //     user_id: "09876543",
+  //     subregion: "SMTH",
+  //   });
+  //   setViewDetailsId("2");
+  // };
 
-  const fetchUserDetails = async () => {
-    // const response = await axios.get(`${API_BASE_URL}/user/`);
-    // API ENDPOINT = http://localhost:3000/api/users/current-officer/:divisionId
-    setUserData({
-      "_id": "67def1e9067649f8b9366f65",
-      "name": "Officer A3",
-      "phone": ["+917000000003","+917000000004"],
-      "email": "a3@mahalunge.com",
-      "isActive": true,
-      "joinedAt": "2023-12-10T00:00:00.000Z",
-      "relievedAt": null,
-      "status": "active"
-    });
+  const fetchUserDetails = async (divisionId) => {
+    const response = await axios.get(`${API_BASE_URL}/users/current-officer/${divisionId}`);
+    console.log(response.data);
+    if(response.data.success){
+      response.data.currentOfficer["divisionId"] = divisionId;
+      setUserData(response.data.currentOfficer);
+      setViewEditUserId("2");
+    } else {
+      toast.error("Failed to fetch user data");
+    }
     setViewEditUserId("2");
   };
 
@@ -87,22 +86,39 @@ const UserManagementPage = () => {
   const closeChangeUserPopUp = async () => {
     setViewChangeUser(false);
   };
-  const applyUserChanges = async () =>{
-    await closeChangeUserPopUp();
-  }
-
-  const applyEdits = async (adwfgh) =>{
-    console.log(adwfgh);
-    await closeChangeUserPopUp();
-  }
+  const applyUserChanges = async (newUserData,divisionId) => {
+    delete newUserData["divisionId"];
+    const response = await axios.post(`${API_BASE_URL}/users/add-officer/${divisionId}`, newUserData);
+    if (response.data.success) {
+      toast.success("User added successfully");
+    }else{
+      toast.error("Failed to add user");
+    }
+    window.location.reload();
+    // await closeChangeUserPopUp();
+  };
+  
+  const applyEdits = async (updatedUserData,divisionId) => {
+    delete updatedUserData["divisionId"];
+    const response = await axios.put(`${API_BASE_URL}/users/update-officer/${divisionId}`, updatedUserData);
+    if (response.data.success) {
+      toast.success("User data updated successfully");
+    }
+    else{
+      toast.error("Failed to update user data");
+    }
+    // await response = await axios.put(`${API_BASE_URL}/users/update-officer/${updatedUserData.division}`, updatedUserData);
+    window.location.reload();
+    // await closeChangeUserPopUp();
+  };
 
   const closeDetails = () => {
     setViewDetailsId(null);
     setDetailsData(null);
   };
-  
+
   const closeEditUserPopUp = async () => {
-      console.log("Closing");
+    console.log("Closing");
     await setViewEditUserId(null);
     console.log("Closed");
   };
@@ -128,7 +144,7 @@ const UserManagementPage = () => {
           {error}
         </div>
       </div>
-  );
+    );
   }
 
   return (
@@ -179,7 +195,7 @@ const UserManagementPage = () => {
                 <tbody className="divide-y divide-seperationSecondary">
                   {queries.map((query) => (
                     <motion.tr
-                      key={query.id}
+                      key={query.divisionId}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
@@ -226,7 +242,7 @@ const UserManagementPage = () => {
                           <button
                             className="text-blue-400 hover:text-blue-300"
                             // YASHRAJ: Hardcoded function for now
-                            onClick={() => fetchUserDetails()}
+                            onClick={() => fetchUserDetails(query.divisionId)}
                           >
                             Edit User
                           </button>
@@ -397,16 +413,22 @@ const UserManagementPage = () => {
         </div>
       )}
 
-
       {/* Edit User Modal */}
-      {viewEditUserId && userData &&(
+      {viewEditUserId && userData && (
         // YASHRAJ: Fetch and set officerObject
-        <UserEdit applyChangesFunc={applyEdits} closeFunc={closeEditUserPopUp} officerObject={userData}/>
+        <UserEdit
+          applyChangesFunc={applyEdits}
+          closeFunc={closeEditUserPopUp}
+          officerObject={userData}
+        />
       )}
 
       {/* Add User Modal */}
       {viewChangeUser && (
-        <UserEdit applyChangesFunc={applyUserChanges} closeFunc={closeChangeUserPopUp} />
+        <UserEdit
+          applyChangesFunc={applyUserChanges}
+          closeFunc={closeChangeUserPopUp}
+        />
       )}
     </div>
   );
