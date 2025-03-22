@@ -211,8 +211,7 @@ const ChalanPage = () => {
 
                 {/* Broadcast Message Section */}
                 <motion.div
-                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg
-shadow-bgPrimary rounded-xl p-6 border border-gray-700"
+                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
@@ -224,7 +223,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                         <div className="space-y-3">
                             <h3 className="text-lg text-tBase">Broadcast to All Users</h3>
                             <textarea
-                                className="w-full bg-primary text-tBase rounded-md p-3 h-32 focus:outline-none focus:ring-2 focus:ring-secondary"
+                                className="w-full bg-primary text-tBase rounded-md p-3 h-[156px] focus:outline-none focus:ring-2 focus:ring-secondary"
                                 placeholder="Enter message to broadcast to all users..."
                                 value={broadcastMessage}
                                 onChange={(e) => setBroadcastMessage(e.target.value)}

@@ -54,12 +54,6 @@ const Sidebar = () => {
         href: "/chalan",
       });
       items.push({
-        name: "Division Wise Performance",
-        icon: Users,
-        color: "#10B981",
-        href: "/divisionwiseperformance",
-      });
-      items.push({
         name: "User Management",
         icon: Users,
         color: "#10B981",

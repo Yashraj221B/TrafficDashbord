@@ -24,6 +24,8 @@
         --color-text-disabled: #6b7280;
 
         --color-primary-divider: #646363;
+        /* --color-secondary-divider: #38373e; */
+        --color-secondary-divider: #374151 ;
     }
 }
 
