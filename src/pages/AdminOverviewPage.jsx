@@ -189,9 +189,13 @@ const AdminOverviewPage = () => {
     { name: "Total", value: (dashboardData.totalQueries || 0) - (dashboardData.queryStatus?.resolved || 0) },
   ];
 
-  const activeUsersData = [
-    { name: "Active Sessions", value: dashboardData.activeSessions || 0 },
-    { name: "Total Users", value: (dashboardData.userCount || 0) - (dashboardData.activeSessions || 0) },
+
+  const rejectedQueriesData = [
+    { name: "Rejected", value: dashboardData.queryStatus.rejected },
+    {
+      name: "Total",
+      value: dashboardData.totalQueries - dashboardData.queryStatus.rejected,
+    },
   ];
 
   const queriesPerDayData =
@@ -381,10 +385,10 @@ const AdminOverviewPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: transitionDuration }}
       >
-        <TwoValueRadialChart name={"Pending Queries"} categoryData={pendingQueriesData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
+        <TwoValueRadialChart name={"Pending Issues"} categoryData={pendingQueriesData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
         <TwoValueRadialChart name={"In Progress"} categoryData={inProgressQueriesData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
         <TwoValueRadialChart name={"Resolved Issues"} categoryData={resolvedQueriesData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
-        <TwoValueRadialChart name={"Active Users"} categoryData={activeUsersData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
+        <TwoValueRadialChart name={"Rejected Issues"} categoryData={rejectedQueriesData} innerRadius={_innerRadius} outerRadius={_outerRadius} height={100} />
       </motion.div>
 
       <motion.div

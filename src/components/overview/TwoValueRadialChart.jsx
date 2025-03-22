@@ -16,20 +16,14 @@ const CategoryDistributionChart = ({
   name = "Pie Chart",
 }) => {
 
-  const getLargestValue = () => {
-    return categoryData.reduce(
-      (max, item) => (item.value > max.value ? item : max),
-      categoryData[0]
-    );
-  };
   const getTotalValue = () => {
     return categoryData.reduce((total, item) => total + item.value, 0);
   };
 
-  const getLargestValuePercentage = () => {
-    const largestValue = getLargestValue().value;
+  const getZeroElementPercentage = () => {
+    const zeroElementValue = categoryData[0].value;
     const totalValue = getTotalValue();
-    return ((largestValue / totalValue) * 100).toFixed(2);
+    return ((zeroElementValue / totalValue) * 100).toFixed(2);
   };
 
   return (
@@ -54,7 +48,7 @@ const CategoryDistributionChart = ({
                 fill= {Themes[getCurrentTheme()]["tBase"]}
                 fontSize={14}
               >
-                {Math.round(getLargestValuePercentage())}%
+                {Math.round(getZeroElementPercentage())}%
               </text>
               <Pie
                 data={categoryData}
@@ -93,20 +87,17 @@ const CategoryDistributionChart = ({
         </div>
         <div className="w-4/5 flex flex-col justify-center items-start pl-6">
           <div className="space-y-3">
-            {categoryData.map((item, index) => (
-              <div key={index} className="flex items-center space-x-3">
+              <div key={0} className="flex items-center space-x-3">
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{
                     backgroundColor:
-                      Themes[getCurrentTheme()]["COLORS"][
-                        index % Themes[getCurrentTheme()]["COLORS"].length
-                      ],
+                      Themes[getCurrentTheme()]["COLORS"][0],
                   }}
                 />
-                <span className="text-tBase text-sm">{item.name}</span>
+                <span className="text-tBase text-sm">{categoryData[0].name}</span>
               </div>
-            ))}
+                <span className="text-tBase text-lg">{categoryData[0].value}</span>
           </div>
         </div>
       </div>
