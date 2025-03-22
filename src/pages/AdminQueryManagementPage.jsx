@@ -27,7 +27,6 @@ const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
   1. [x] Clear the currently selected division when the timeline filter is cleared using clear button
   2. [will do when raviraj is done working on that page] Close the dialog box when the "record" is marked as resolved/rejected/(smthg else) [NOT COMPULSORY - but good to have ig, it's up to you]
   3. [will do when raviraj is done working on that page] fmKeep the filter state when smthg is marked as resolved/pending (basically status is changed) - currently it resets the filter and displays all the entries
-  - In case it's a backend issue, let me know, I'll fix it from my end
 */
 
 const divisions = [
