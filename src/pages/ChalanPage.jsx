@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
 const ChalanPage = () => {
     console.log("ChalanPage rendering");
     
@@ -24,7 +26,7 @@ const ChalanPage = () => {
     });
 
     // API base URL - can be moved to environment variable
-    const API_BASE_URL = "http://localhost:3000/api";
+    const API_BASE_URL = `${backendUrl}/api`;
 
     useEffect(() => {
         console.log("ChalanPage mounted");

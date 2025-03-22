@@ -16,6 +16,9 @@ import axios from "axios";
 const userData = JSON.parse(localStorage.getItem("userData"));
 let divisionId = "NOT_SPECIFIED";
 let divisionName = "NOT_SPECIFIED";
+
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
 if(userData && userData.role == "division_admin"){
   divisionId = userData.divisionId;
   divisionName = userData.divisionName;
@@ -29,7 +32,7 @@ const QueryTrends = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/queries/division/${divisionId}/stats`
+          `${backendUrl}/api/queries/division/${divisionId}/stats`
         );
         if (response.data.success && response.data.stats.recent.dailyCounts) {
           // Format data for the chart

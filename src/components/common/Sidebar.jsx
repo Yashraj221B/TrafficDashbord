@@ -1,18 +1,32 @@
 import { BarChart2, Menu, Settings, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMainAdmin, setIsMainAdmin] = useState(false);
+  const [divisionName, setDivisionName] = useState("");
 
-  // Get user information from localStorage instead of using Auth context
-  const userRole = localStorage.getItem("userRole") || "";
-  const divisionName = localStorage.getItem("divisionName") || "";
-  const username = localStorage.getItem("username") || "";
-
-  // Check user roles using localStorage
-  const isMainAdmin = userRole === "main_admin";
+  useEffect(() => {
+    // Make the API call inside useEffect
+    axios
+      .get(`${import.meta.env.VITE_Backend_URL || 'http://localhost:3000'}/api/auth/me`)
+      .then((response) => {
+        if (response.data.success) {
+          if (response.data.user.role === "main_admin") {
+            setIsMainAdmin(true);
+          } else {
+            setIsMainAdmin(false);
+            setDivisionName(response.data.user.divisionName);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
   // Define sidebar items based on user role
   const getSidebarItems = () => {
