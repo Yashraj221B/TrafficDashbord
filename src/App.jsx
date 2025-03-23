@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
+import authService from "./services/authService";
+import { AuthProvider } from "./components/auth/AuthContext";
+
+import { DivisionProvider } from "./contexts/DivisionContext";
+
 import Sidebar from "./components/common/Sidebar";
 import LoginPage from "./pages/LoginPage";
 import OverviewPage from "./pages/OverviewPage";
-import UsersPage from "./pages/UsersPage";
-import ChalanPage from "./pages/ChalanPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminQueryManagementPage from "./pages/AdminQueryManagementPage";
-import { AuthProvider } from "./components/auth/AuthContext";
-import { DivisionProvider } from "./contexts/DivisionContext";
-import authService from "./services/authService";
 import Backdrop from "./components/common/Backdrop";
-import DivisionWisePerformance from "./pages/DivisionWisePerformancePage";
+import UserManagementPage from "./pages/UserManagementPage";
+import AdminOverviewPage from "./pages/AdminOverviewPage";
+import QueryManagementPage from "./pages/QueryManagementPage";
+import VolunteerManagementPage from "./pages/VolunteerManagementPage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -29,7 +32,7 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   /**
    * Set local storage variables for later use and handle logout
@@ -37,7 +40,6 @@ function App() {
    * @param {string} _username - The username
    */
   function setLocalStorage(_isLoggedIn, _username) {
-
     setUsername(_username);
 
     if (_isLoggedIn) {
@@ -92,33 +94,33 @@ function App() {
                 </>
               }
             />
-
-
-            {/* Dashboard data and graphs without extra filters */}
+            {/* Admin-only route */}
             <Route
-              path="/overview"
+              path="/adminoverview"
               element={
                 <ProtectedRoute>
-                  <Backdrop />
-                  <Sidebar />
-                  <OverviewPage />
-                </ProtectedRoute>
-              }
-            />
-            
-
-            {/* The actual dashboard with filters */}
-            <Route
-              path="/volunteers"
-              element={
-                <ProtectedRoute>
-                  <Backdrop />
-                  <Sidebar />
-                  <UsersPage />
+                  <AdminRoute>
+                    <Backdrop />
+                    <Sidebar />
+                    <AdminOverviewPage />
+                  </AdminRoute>
                 </ProtectedRoute>
               }
             />
 
+            {/* Admin-only route */}
+            <Route
+              path="/volunteermanagement"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <Backdrop />
+                    <Sidebar />
+                    <VolunteerManagementPage />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
             {/* YASHRAJ: Make sure this is actually protected and you cant just "site/admin..." your way into it */}
             {/* I have added code (Sidebar.jsx) to redirect Admin here and others there */}
             <Route
@@ -132,27 +134,40 @@ function App() {
               }
             />
 
-            <Route
-              path="/divisionwiseperformance"
-              element={
-                <ProtectedRoute>
-                  <Backdrop />
-                  <Sidebar />
-                  <DivisionWisePerformance />
-                </ProtectedRoute>
-              }
-            />
-
             {/* Admin-only route */}
             <Route
-              path="/chalan"
+              path="/usermanagement"
               element={
                 <ProtectedRoute>
                   <AdminRoute>
                     <Backdrop />
                     <Sidebar />
-                    <ChalanPage />
+                    <UserManagementPage />
                   </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dashboard data and graphs without extra filters */}
+            <Route
+              path="/overview"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <OverviewPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* The actual dashboard with filters */}
+            <Route
+              path="/queryManagement"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <QueryManagementPage />
                 </ProtectedRoute>
               }
             />

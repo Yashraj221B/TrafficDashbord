@@ -13,6 +13,17 @@ import { motion } from "framer-motion";
 import Themes, { getCurrentTheme } from "../../assets/Themes";
 import axios from "axios";
 
+const userData = JSON.parse(localStorage.getItem("userData"));
+let divisionId = "NOT_SPECIFIED";
+let divisionName = "NOT_SPECIFIED";
+
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
+if(userData && userData.role == "division_admin"){
+  divisionId = userData.divisionId;
+  divisionName = userData.divisionName;
+}
+
 const QueryTrends = () => {
   const [trendData, setTrendData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +32,7 @@ const QueryTrends = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/queries/statistics"
+          `${backendUrl}/api/queries/division/${divisionId}/stats`
         );
         if (response.data.success && response.data.stats.recent.dailyCounts) {
           // Format data for the chart
@@ -48,7 +59,7 @@ const QueryTrends = () => {
       className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
+      transition={{ delay: 0.2, duration:0.5 }}
     >
       <h2 className="text-xl font-semibold text-tBase mb-4">
         Query Trends (Last 30 Days)

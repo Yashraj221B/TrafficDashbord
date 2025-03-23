@@ -1,18 +1,33 @@
 import { BarChart2, Menu, Settings, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMainAdmin, setIsMainAdmin] = useState(false);
+  const [divisionName, setDivisionName] = useState("");
+  const location = useLocation();
 
-  // Get user information from localStorage instead of using Auth context
-  const userRole = localStorage.getItem("userRole") || "";
-  const divisionName = localStorage.getItem("divisionName") || "";
-  const username = localStorage.getItem("username") || "";
-
-  // Check user roles using localStorage
-  const isMainAdmin = userRole === "main_admin";
+  useEffect(() => {
+    // Make the API call inside useEffect
+    axios
+      .get(`${import.meta.env.VITE_Backend_URL || 'http://localhost:3000'}/api/auth/me`)
+      .then((response) => {
+        if (response.data.success) {
+          if (response.data.user.role === "main_admin") {
+            setIsMainAdmin(true);
+          } else {
+            setIsMainAdmin(false);
+            setDivisionName(response.data.user.divisionName);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
   // Define sidebar items based on user role
   const getSidebarItems = () => {
@@ -21,38 +36,38 @@ const Sidebar = () => {
         name: "Overview",
         icon: BarChart2,
         color: "#6366f1",
-        href: "/overview",
+        href: isMainAdmin?"/adminoverview":"/overview",
       },
       {
         name: "Query Management",
         icon: Users,
         color: "#EC4899",
-        href: isMainAdmin?"/adminQueryManagement":"/volunteers",
+        href: isMainAdmin?"/adminQueryManagement":"/queryManagement",
       },
     ];
 
     // Only main admin gets access to User Management
     if (isMainAdmin) {
       items.push({
+        name: "Volunteer Management",
+        icon: Users,
+        color: "#10B981",
+        href: "/volunteermanagement",
+      });
+      items.push({
         name: "User Management",
         icon: Users,
         color: "#10B981",
-        href: "/chalan",
-      });
-      items.push({
-        name: "Division Wise Performance",
-        icon: Users,
-        color: "#10B981",
-        href: "/divisionwiseperformance",
+        href: "/usermanagement",
       });
     }
 
     // Everyone gets access to settings
     items.push({
       name: "Settings",
-      icon: Settings,
-      color: "#6EE7B7",
-      href: "/settings",
+        icon: Settings,
+        color: "#6EE7B7",
+        href: "/settings",
     });
 
     return items;
@@ -104,7 +119,9 @@ const Sidebar = () => {
           {SIDEBAR_ITEMS.map((item) => (
             <Link key={item.name} to={item.href}>
               <motion.div
-                className="flex items-center p-3 mb-1 rounded-lg transition-colors hover:bg-primary group"
+                className={`flex items-center p-3 mb-1 rounded-lg transition-colors hover:bg-primary group ${
+                  location.pathname === item.href ? "bg-primary" : ""
+                }`}
                 whileHover={{ x: 5 }}
               >
                 <item.icon

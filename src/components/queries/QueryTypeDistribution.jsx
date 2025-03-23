@@ -28,7 +28,7 @@ const QueryTypeDistribution = ({ stats }) => {
       className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
+      transition={{ duration:0.5 }}
     >
       <h2 className="text-xl font-semibold text-tBase mb-4">
         Query Type Distribution
@@ -56,6 +56,9 @@ const QueryTypeDistribution = ({ stats }) => {
               width={95}
             />
             <Tooltip
+                    cursor={{
+                      fill:Themes[getCurrentTheme()]["hovPrimary"],
+                    }}
               contentStyle={{
                 backgroundColor: Themes[getCurrentTheme()]["bgPrimary"],
                 opacity: "80%",
