@@ -19,8 +19,6 @@ import StatCard from "../components/common/StatCard";
 import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
-import { capitalize } from "@mui/material";
-
 
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
@@ -39,22 +37,7 @@ const divisions = [
   { value: "TALEGAON", label: "Talegaon", id:"67dac3e9bb20f51c531c1509"},
 ];
 
-// const divisionName = localStorage.getItem("divisionName");
-// const _division = divisions.find(division => division.value === divisionName);
-// const divisionId = _division ? _division.id : "NOT_SPECIFIED";
-const userData = JSON.parse(localStorage.getItem("userData"));
-let divisionId = "NOT_SPECIFIED";
-let divisionName = "NOT_SPECIFIED";
-if(userData && userData.role == "division_admin"){
-  divisionId = userData.divisionId;
-  divisionName = userData.divisionName;
-}
-
-console.log("User Data: ", userData);
-console.log("Division Name: ", divisionName);
-console.log("Division ID: ", divisionId);
-
-const QueryManagementPage = () => {
+const AdminQueryManagementPage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [timelineActive, setTimelineActive] = useState(false);
@@ -129,7 +112,7 @@ const QueryManagementPage = () => {
   const fetchQueryStats = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/division/${divisionId}/stats`
+        "http://localhost:3000/api/queries/statistics"
       );
       if (response.data.success) {
         setQueryStats(response.data.stats);
@@ -209,7 +192,7 @@ const QueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&division=${divisionId}`;
+      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -350,10 +333,13 @@ const QueryManagementPage = () => {
       // Format dates with timezone consideration
       const formattedStartDate = startDate; // Use as is from date input
       const formattedEndDate = endDate; // Use as is from date input
+      
+      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id;
 
       console.log(
         `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`
       );
+
 
       const response = await axios.get(
         `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
@@ -450,7 +436,7 @@ const QueryManagementPage = () => {
         } else {
           // For larger datasets, make a dedicated API call to get all matching data (not just current page)
           // We'll construct a URL similar to fetchQueries but without pagination limits
-          let url = `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`;
+          let url = `http://localhost:3000/api/queries?limit=1000`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -466,7 +452,7 @@ const QueryManagementPage = () => {
 
           if (timelineActive && startDate && endDate) {
             // Use timeline endpoint instead
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}`;
+            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000`;
           }
 
           const response = await axios.get(url);
@@ -478,7 +464,7 @@ const QueryManagementPage = () => {
         // If no filters, we might want all data, but that could be a lot
         // Let's limit to 1000 most recent entries to avoid browser issues
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`
+          `http://localhost:3000/api/queries?limit=1000`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;
@@ -531,8 +517,7 @@ const QueryManagementPage = () => {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      {/* YASHRAJ: Make sure this works properly when the component mounts > DONE */}
-      <Header title={ (divisionName) + " Division Query Management" }/>
+      <Header title="Query Management" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
                 {/* QUERY CHARTS - Now using filteredStats instead of queryStats */}
@@ -579,6 +564,7 @@ const QueryManagementPage = () => {
         </motion.div>
 
         </div>
+
         {/* FILTERS */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
@@ -712,6 +698,102 @@ const QueryManagementPage = () => {
 
             {/* Add this inside the filter section div */}
             <div className="flex text-tBase items-center gap-3 w-full md:w-auto mt-3 md:mt-0">
+              <label className="text-tBase">Select Division:</label>
+              <select
+                id="division-select"
+                name="divisions"
+                value={selectedDivision}
+                onChange={handleDivisionFilter}
+                className="bg-primary text-tBase rounded-lg border-2 border-borderPrimary px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+              >
+                <option className="bg-primary hover:bg-hovPrimary" value="">
+                  All Divisions
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="MAHALUNGE"
+                >
+                  Mahalunge
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="CHAKAN"
+                >
+                  Chakan
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="DIGHI ALANDI"
+                >
+                  Dighi-Alandi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="BHOSARI"
+                >
+                  Bhosari
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="TALWADE"
+                >
+                  Talwade
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="PIMPRI"
+                >
+                  Pimpri
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="CHINCHWAD"
+                >
+                  Chinchwad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="NIGDI"
+                >
+                  Nigdi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="SANGHVI"
+                >
+                  Sanghvi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="HINJEWADI"
+                >
+                  Hinjewadi
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="WAKAD"
+                >
+                  Wakad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="BACDHAN"
+                >
+                  Bavdhan
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="DEHUROAD"
+                >
+                  Dehuroad
+                </option>
+                <option
+                  className="bg-primary hover:bg-hovPrimary"
+                  value="TALEGOAN"
+                >
+                  Talegaon
+                </option>
+              </select>
               <div className="flex items-center">
                 <Calendar size={18} className="text-tBase mr-2" />
                 <span className="text-tBase mr-2">From:</span>
@@ -1154,4 +1236,4 @@ const QueryManagementPage = () => {
   );
 };
 
-export default QueryManagementPage;
+export default AdminQueryManagementPage;

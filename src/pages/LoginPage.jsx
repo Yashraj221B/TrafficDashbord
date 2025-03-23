@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import trafficLogo from '../assets/traffic-police-logo.jpg'; // Add your logo to assets folder
+import { Navigate, useNavigate, Route, Link } from 'react-router-dom';
+import trafficLogo from '../assets/traffic-police-logo.jpg';
+import authService from '../services/authService';
+import { useAuth } from '../components/auth/AuthContext';
 
 const LoginPage = ({ setter }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // errors like incorrect username/password
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
-    useEffect(() => {
-        // Reset authentication state when the component mounts
-        setter(false, "");
-        
+    useEffect(() => {        
         // Add title
         document.title = "Traffic Buddy - Admin Dashboard";
-    }, [setter]);
+    }, []);
 
-    const handleSubmit = (e) => {
+    //Error handeling
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         
@@ -29,26 +31,47 @@ const LoginPage = ({ setter }) => {
         
         setIsLoading(true);
         
-        // Simulate API call with timeout
-        setTimeout(() => {
-            // Check against hardcoded credentials
-            if (username === 'Admin' && password === 'trafficBuddy@123') {
-                // Authentication successful
+        try {
+            console.log("Login attempt");
+            
+            // If not main admin, try division login via API
+            const response = await authService.login(username, password);
+            
+            if (response.success) {
+                // Set local state via setter prop
                 setter(true, username);
-                navigate('/overview');
-            } else {
-                // Authentication failed
-                setError('Invalid username or password');
-                setIsLoading(false);
+                
+                // Store login state in localStorage
+                localStorage.setItem('username', username);
+                localStorage.setItem('userRole', response.role);
+                
+                if (response.division) {
+                    localStorage.setItem('divisionId', response.division.id);
+                    localStorage.setItem('divisionName', response.division.name);
+                }
+                
+                // Navigate to dashboard
+                console.log("Redirection");
+                window.location.href = "/overview";
+                
+            } else {    
+                throw new Error(response.message || 'Login failed');
             }
-        }, 800);
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('Invalid username or password');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg
-shadow-bgPrimary border border-gray-100">
+        // Center the login screen
+        <div className='flex-1 overflow-auto relative z-10 flex items-center justify-center'>
+            <div className="max-w-md w-full space-y-8 bg-bgSecondary p-8 rounded-xl shadow-lg shadow-bgPrimary border border-borderPrimary">
                 <div className="text-center">
+
+                    {/* Set Login Header */}
                     <div className="flex items-center justify-center mb-4">
                         <img 
                             src={trafficLogo} 
@@ -57,10 +80,11 @@ shadow-bgPrimary border border-gray-100">
                             onError={(e) => e.target.src = 'https://placehold.co/64x64?text=TP'} 
                         />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800">Traffic Buddy Admin Portal</h2>
-                    <p className="mt-2 text-sm text-gray-600">Enter your credentials to access the dashboard</p>
+                    <h2 className="text-2xl font-bold text-tBase">Traffic Buddy Admin Portal</h2>
+                    <p className="mt-2 text-sm text-tSecondary">Enter your credentials to access the dashboard</p>
                 </div>
                 
+                {/* Login Form */}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
@@ -77,9 +101,10 @@ shadow-bgPrimary border border-gray-100">
                         </div>
                     )}
                     
+                    {/* Username InputField */}
                     <div className="rounded-md -space-y-px">
                         <div className="mb-5">
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="username" className="block text-sm font-medium text-tSecondary mb-1">
                                 Username
                             </label>
                             <input
@@ -90,13 +115,15 @@ shadow-bgPrimary border border-gray-100">
                                 required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-secondary focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="bg-primary appearance-none relative block w-full px-3 py-3 border border-borderPrimary placeholder-gray-500 text-tBase rounded-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
                                 placeholder="Enter your username"
                                 disabled={isLoading}
                             />
                         </div>
+
+                        {/* Password InputField */}
                         <div className="mb-5">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="password" className="block text-sm font-medium text-tSecondary mb-1">
                                 Password
                             </label>
                             <input
@@ -107,21 +134,23 @@ shadow-bgPrimary border border-gray-100">
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-secondary focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="bg-primary appearance-none relative block w-full px-3 py-3 border border-borderPrimary placeholder-gray-500 text-tBase rounded-md focus:outline-none focus:ring-secondary focus:border-secondary focus:z-10 sm:text-sm"
                                 placeholder="Enter your password"
                                 disabled={isLoading}
                             />
                         </div>
                     </div>
 
+                    {/* Sign In Button */}
                     <div>
                         <button
                             type="submit"
                             disabled={isLoading}
                             className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-tBase ${
-                                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
+                                isLoading ? 'bg-hovSecondary cursor-not-allowed' : 'bg-secondary hover:bg-hovSecondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary'
                             } transition-colors duration-150`}
-                        >
+                        >  
+                        {/* Text Changes to Signing in on click */}
                             {isLoading ? (
                                 <>
                                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-tBase" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -137,8 +166,9 @@ shadow-bgPrimary border border-gray-100">
                     </div>
                 </form>
                 
+                {/* Sign In Footer */}
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-tDisabled">
                         Traffic Buddy Administration Portal &copy; {new Date().getFullYear()}
                     </p>
                 </div>
