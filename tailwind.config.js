@@ -24,6 +24,7 @@ export default {
 				tDisabled:"var(--color-text-disabled)",
 
 				seperationPrimary:"var(--color-primary-divider)",
+				seperationSecondary:"var(--color-secondary-divider)",
 				
 			}
 		},

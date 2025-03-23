@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const ChalanPage = () => {
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
+const VolunteerManagementPage = () => {
     console.log("ChalanPage rendering");
     
     const [joinRequests, setJoinRequests] = useState([]);
@@ -24,7 +26,7 @@ const ChalanPage = () => {
     });
 
     // API base URL - can be moved to environment variable
-    const API_BASE_URL = "http://localhost:3000/api";
+    const API_BASE_URL = `${backendUrl}/api`;
 
     useEffect(() => {
         console.log("ChalanPage mounted");
@@ -171,7 +173,7 @@ const ChalanPage = () => {
 
     return (
         <div className="flex-1 overflow-auto relative z-10">
-            <Header title="User Management" />
+            <Header title="Volunteer Management" />
 
             <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
                 {/* Stats */}
@@ -209,8 +211,7 @@ const ChalanPage = () => {
 
                 {/* Broadcast Message Section */}
                 <motion.div
-                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg
-shadow-bgPrimary rounded-xl p-6 border border-gray-700"
+                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
@@ -222,13 +223,13 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                         <div className="space-y-3">
                             <h3 className="text-lg text-tBase">Broadcast to All Users</h3>
                             <textarea
-                                className="w-full bg-primary text-tBase rounded-md p-3 h-32 focus:outline-none focus:ring-2 focus:ring-secondary"
+                                className="w-full bg-primary text-tBase rounded-md p-3 h-[156px] focus:outline-none focus:ring-2 focus:ring-secondary"
                                 placeholder="Enter message to broadcast to all users..."
                                 value={broadcastMessage}
                                 onChange={(e) => setBroadcastMessage(e.target.value)}
                             ></textarea>
                             <button
-                                className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200"
+                                className="flex items-center justify-center w-full bg-secondary hover:bg-hovSecondary text-tBase py-2 px-4 rounded-md transition duration-200"
                                 onClick={handleBroadcastToAll}
                                 disabled={isBroadcasting || !broadcastMessage.trim()}
                             >
@@ -280,7 +281,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                 <input
                                     type="text"
                                     placeholder="Search requests..."
-                                    className="pl-10 pr-4 py-2 bg-primary rounded-md border border-gray-600 text-tBase focus:outline-none focus:ring-2 focus:ring-secondary w-full"
+                                    className="pl-10 pr-4 py-2 bg-primary rounded-md border border-borderPrimary text-tBase focus:outline-none focus:ring-2 focus:ring-secondary w-full"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -312,7 +313,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
 
                     {loading ? (
                         <div className="flex justify-center items-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-borderSecondary"></div>
                         </div>
                     ) : filteredRequests.length === 0 ? (
                         <div className="bg-bgSecondary bg-opacity-50 rounded-lg p-8 text-center">
@@ -320,7 +321,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-700">
+                            <table className="min-w-full divide-y divide-seperationPrimary">
                                 <thead>
                                     <tr>
                                         <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">User</th>
@@ -330,7 +331,7 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
                                         <th className="px-6 py-3 bg-primary text-right text-xs font-medium text-tBase uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-gray-700">
+                                <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-seperationSecondary">
                                     {filteredRequests.map((request) => {
                                         // Extract name, email, phone from description if not available directly
                                         const descLines = request.description ? request.description.split('\n') : [];
@@ -411,4 +412,4 @@ shadow-bgPrimary rounded-xl p-6 border border-gray-700"
     );
 };
 
-export default ChalanPage;
+export default VolunteerManagementPage;
