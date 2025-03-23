@@ -79,16 +79,16 @@ const AdminOverviewPage = () => {
 
         setDashboardData(summaryRes.data.data || {});
         setRecentActivity(allRecentActivities);
-        console.log(
-          "Total recent activities fetched:",
-          allRecentActivities.length
-        );
-        console.log(
-          "Total queries from summary:",
-          summaryRes.data.data.totalQueries
-        );
+        // console.log(
+        //   "Total recent activities fetched:",
+        //   allRecentActivities.length
+        // );
+        // console.log(
+        //   "Total queries from summary:",
+        //   summaryRes.data.data.totalQueries
+        // );
         if (allRecentActivities.length > 0) {
-          console.log("Sample recent activity:", allRecentActivities[0]);
+          //console.log("Sample recent activity:", allRecentActivities[0]);
         }
         setError(null);
       } catch (err) {
@@ -242,7 +242,7 @@ const AdminOverviewPage = () => {
         )
       ),
     ];
-    console.log("All statuses in recentActivity:", allStatuses);
+    //onsole.log("All statuses in recentActivity:", allStatuses);
 
     const allDivisions = [
       ...new Set(
@@ -256,7 +256,8 @@ const AdminOverviewPage = () => {
       ),
     ].filter((division) => DivisionNames.includes(division));
 
-    console.log("Filtered divisions (only allowed ones):", allDivisions);
+    //Whoever wrote this bro WHYYYYYYy
+    ////onsole.log("Filtered divisions (only allowed ones):", allDivisions);
 
     const groupedByDivision = recentActivity.reduce((acc, activity) => {
       const rawDivisionName =
@@ -290,18 +291,18 @@ const AdminOverviewPage = () => {
         acc[divisionName].rejected += 1;
       } else {
         acc[divisionName].pending += 1;
-        console.log(
+        /*console.log(
           `Mapped status "${status}" to Pending for division ${divisionName}`
-        );
+        );*/
       }
 
       return acc;
     }, {});
 
-    console.log(
-      "Grouped by division (only allowed divisions):",
-      groupedByDivision
-    );
+    /* console.log(
+       "Grouped by division (only allowed divisions):",
+       groupedByDivision
+     );*/
 
     const result = allDivisions.map((divisionName) => ({
       name: divisionName,
@@ -320,10 +321,10 @@ const AdminOverviewPage = () => {
         division.rejected
       );
     }, 0);
-    console.log(
-      "Total queries in chart (only allowed divisions):",
-      totalQueriesInChart
-    );
+    // console.log(
+    //   "Total queries in chart (only allowed divisions):",
+    //   totalQueriesInChart
+    // );
 
     return result;
   })();
@@ -395,7 +396,7 @@ const AdminOverviewPage = () => {
   const _innerRadius = 20;
   const _outerRadius = 35;
 
-  console.log("Total queries from dashboardData:", dashboardData.totalQueries);
+  //onsole.log("Total queries from dashboardData:", dashboardData.totalQueries);
 
   if (loading) {
     return (

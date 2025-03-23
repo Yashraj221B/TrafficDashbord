@@ -56,6 +56,9 @@ const QueryTypeDistribution = ({ stats }) => {
               width={95}
             />
             <Tooltip
+                    cursor={{
+                      fill:Themes[getCurrentTheme()]["hovPrimary"],
+                    }}
               contentStyle={{
                 backgroundColor: Themes[getCurrentTheme()]["bgPrimary"],
                 opacity: "80%",

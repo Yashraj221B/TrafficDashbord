@@ -1,4 +1,5 @@
 import { BarChart, XAxis, YAxis, Bar, Tooltip, CartesianGrid } from "recharts";
+import Themes, { getCurrentTheme } from "../../assets/Themes";
 
 // Custom Horizontal Bar Chart Component for Average Resolution Time
 const HorizontalBarChart = ({ data, name }) => {
@@ -15,7 +16,7 @@ const HorizontalBarChart = ({ data, name }) => {
     <div className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-borderPrimary">
       <h2 className="text-lg font-medium text-tBase mb-4">{name}</h2>
       <BarChart
-        width={600}
+        width={1200}
         height={data.length * 40 + 60}
         data={data}
         layout="vertical"
@@ -24,7 +25,20 @@ const HorizontalBarChart = ({ data, name }) => {
         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
         <XAxis type="number" stroke="#ccc" label={{ value: "Hours", position: "insideBottomRight", offset: -5, fill: "#ccc" }} />
         <YAxis type="category" dataKey="name" stroke="#ccc" width={150} />
-        <Tooltip contentStyle={{ backgroundColor: "#333", border: "none", color: "#fff" }} />
+        <Tooltip
+        cursor={{
+          fill:Themes[getCurrentTheme()]["hovPrimary"],
+        }}
+                contentStyle={{
+                  backgroundColor: Themes[getCurrentTheme()]["bgPrimary"],
+                  opacity: "80%",
+                  borderColor: Themes[getCurrentTheme()]["borderPrimary"],
+                }}
+                itemStyle={{
+                  color: Themes[getCurrentTheme()]["tBase"],
+                  opacity: "100%",
+                }}
+              />
         <Bar dataKey="value" fill="#8884d8" />
       </BarChart>
     </div>

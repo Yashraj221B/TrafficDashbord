@@ -32,7 +32,11 @@ const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },
   { value: "CHAKAN", label: "Chakan", id: "67dc019a6532e1c784d60840" },
-  {value: "DIGHI ALANDI",label: "Dighi-Alandi",id: "67db077dfa28812fe4f9573f",},
+  {
+    value: "DIGHI ALANDI",
+    label: "Dighi-Alandi",
+    id: "67db077dfa28812fe4f9573f",
+  },
   { value: "BHOSARI", label: "Bhosari", id: "67dc19f0a9ae16de2619b735" },
   { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
   { value: "PIMPRI", label: "Pimpri", id: "67dc18f0a9ae16de2619b72c" },
@@ -46,8 +50,7 @@ const divisions = [
   { value: "TALEGAON", label: "Talegaon", id: "67dac3e9bb20f51c531c1509" },
 ];
 
-function setTodayDate(setEndDate){
-  
+function setTodayDate(setEndDate) {
   var today = new Date();
   var dd = String(today.getDate()).padStart(2, "0");
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
@@ -57,8 +60,7 @@ function setTodayDate(setEndDate){
   setEndDate(today);
 }
 
-function setDateXDaysAgo(setEndDate, x){
-
+function setDateXDaysAgo(setEndDate, x) {
   var today = new Date();
   today.setDate(today.getDate() - x);
 
@@ -69,7 +71,6 @@ function setDateXDaysAgo(setEndDate, x){
   today = yyyy + "-" + mm + "-" + dd;
   setEndDate(today);
 }
-
 
 const AdminQueryManagementPage = () => {
   const [startDate, setStartDate] = useState("");
@@ -141,7 +142,6 @@ const AdminQueryManagementPage = () => {
     setTodayDate(setEndDate);
     setDateXDaysAgo(setStartDate, 30);
     setTimelineActive(true);
-
   }, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive]);
 
   // Update filtered stats whenever queries change

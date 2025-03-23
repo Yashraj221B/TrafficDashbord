@@ -229,7 +229,7 @@ const VolunteerManagementPage = () => {
                                 onChange={(e) => setBroadcastMessage(e.target.value)}
                             ></textarea>
                             <button
-                                className="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-tBase py-2 px-4 rounded-md transition duration-200"
+                                className="flex items-center justify-center w-full bg-secondary hover:bg-hovSecondary text-tBase py-2 px-4 rounded-md transition duration-200"
                                 onClick={handleBroadcastToAll}
                                 disabled={isBroadcasting || !broadcastMessage.trim()}
                             >
@@ -281,7 +281,7 @@ const VolunteerManagementPage = () => {
                                 <input
                                     type="text"
                                     placeholder="Search requests..."
-                                    className="pl-10 pr-4 py-2 bg-primary rounded-md border border-gray-600 text-tBase focus:outline-none focus:ring-2 focus:ring-secondary w-full"
+                                    className="pl-10 pr-4 py-2 bg-primary rounded-md border border-borderPrimary text-tBase focus:outline-none focus:ring-2 focus:ring-secondary w-full"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -313,7 +313,7 @@ const VolunteerManagementPage = () => {
 
                     {loading ? (
                         <div className="flex justify-center items-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-borderSecondary"></div>
                         </div>
                     ) : filteredRequests.length === 0 ? (
                         <div className="bg-bgSecondary bg-opacity-50 rounded-lg p-8 text-center">
@@ -321,7 +321,7 @@ const VolunteerManagementPage = () => {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-700">
+                            <table className="min-w-full divide-y divide-seperationPrimary">
                                 <thead>
                                     <tr>
                                         <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">User</th>
@@ -331,7 +331,7 @@ const VolunteerManagementPage = () => {
                                         <th className="px-6 py-3 bg-primary text-right text-xs font-medium text-tBase uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-gray-700">
+                                <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-seperationSecondary">
                                     {filteredRequests.map((request) => {
                                         // Extract name, email, phone from description if not available directly
                                         const descLines = request.description ? request.description.split('\n') : [];
