@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 
-const ChalanPage = () => {
+const VolunteerManagementPage = () => {
     console.log("ChalanPage rendering");
     
     const [joinRequests, setJoinRequests] = useState([]);
@@ -412,4 +412,4 @@ const ChalanPage = () => {
     );
 };
 
-export default ChalanPage;
+export default VolunteerManagementPage;

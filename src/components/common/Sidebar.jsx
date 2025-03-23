@@ -42,7 +42,7 @@ const Sidebar = () => {
         name: "Query Management",
         icon: Users,
         color: "#EC4899",
-        href: isMainAdmin?"/adminQueryManagement":"/volunteers",
+        href: isMainAdmin?"/adminQueryManagement":"/queryManagement",
       },
     ];
 
@@ -52,7 +52,7 @@ const Sidebar = () => {
         name: "Volunteer Management",
         icon: Users,
         color: "#10B981",
-        href: "/chalan",
+        href: "/volunteermanagement",
       });
       items.push({
         name: "User Management",
