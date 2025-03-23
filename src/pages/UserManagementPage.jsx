@@ -28,17 +28,17 @@ const UserManagementPage = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [queries, setQueries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUserType, setSelectedUserType] = useState("ACTIVE");
+  const [selectedUserType, setSelectedUserType] = useState("active");
 
   // API base URL - can be moved to environment variable
   const API_BASE_URL = `${backendUrl}/api`;
 
   const fetchOfficerData = async () => {
     try {
-      setLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/users/current-officer/`
       );
+      //////console.log("fetchOfficerData", response.data);
       setQueries(response.data.officers);
       setTotalPages(1);
       setError(null);
@@ -51,19 +51,22 @@ const UserManagementPage = () => {
   };
   
   useEffect(() => {
+    //////console.log("searchTerm: ", searchTerm);
+    ////console.log("selectedUserType: ", selectedUserType);
     if (searchTerm === "" && selectedUserType === "active") {
       fetchOfficerData();
     } else {
       filterQueries();
     }
-  }, [searchTerm, selectedUserType]);
+  }, [currentPage, searchTerm, selectedUserType]);
 
   const filterQueries = async () => {
+    // setLoading(true);
     try {
-      setLoading(true);
       const response = await axios.get(
         `${API_BASE_URL}/users/filter-officers?searchTerm=${searchTerm}&status=${selectedUserType}`
       );
+      ////console.log("Filter Queries Response: ",response.data);
       if (response.data.success) {
         setQueries(response.data.officers);
       } else {
@@ -79,9 +82,10 @@ const UserManagementPage = () => {
 
   const fetchUserDetails = async (divisionId) => {
     const response = await axios.get(`${API_BASE_URL}/users/current-officer/${divisionId}`);
-    console.log(response.data);
+    ////console.log(response.data);
     if(response.data.success){
-      response.data.officer["divisionId"] = divisionId;
+      ////console.log(response.data);
+      response.data.currentOfficer["divisionId"] = divisionId;
       setUserData(response.data.currentOfficer);
       setViewEditUserId("2");
     } else {
@@ -128,13 +132,14 @@ const UserManagementPage = () => {
   };
 
   const closeEditUserPopUp = async () => {
-    console.log("Closing");
+    //////console.log("Closing");
     await setViewEditUserId(null);
-    console.log("Closed");
+    //////console.log("Closed");
   };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
   
   const handleUserTypeChange = (e) => {
@@ -237,7 +242,7 @@ const UserManagementPage = () => {
               className="w-40 bg-secondary hover:bg-hovSecondary text-tBase py-2 px-4 rounded-md transition duration-200"
               onClick={showChangeUserPopUp}
             >
-              {isBroadcasting ? "Sending..." : "Change User"}
+              {"Change User"}
             </button>
           </div>
           {loading ? (
