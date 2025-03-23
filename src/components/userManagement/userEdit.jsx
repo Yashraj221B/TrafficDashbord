@@ -8,7 +8,7 @@ const defaultOfficerObject = {
   alternate_phone: "",
   email: "",
   post: "",
-  division: "Choose Division",
+  divisionId: "Choose Division",
 };
 
 const UserEdit = ({
@@ -41,7 +41,7 @@ const UserEdit = ({
   };
 
   const handleSubmit = () => {
-    applyChangesFunc(editedOfficer, officerObject === defaultOfficerObject ? editedOfficer.division : officerObject.divisionId);
+    applyChangesFunc(editedOfficer, officerObject === defaultOfficerObject ? editedOfficer.divisionId : officerObject.divisionId);
   };
 
   return (
@@ -82,9 +82,10 @@ const UserEdit = ({
                   Division
                 </label>
                 <select
-                  name="division"
+                  disabled = {officerObject === defaultOfficerObject ? false : true}
+                  name="divisionId"
                   className="w-48 bg-primary text-tBase rounded-md py-2 px-4  focus:outline-none focus:ring-2 focus:ring-secondary"
-                  value={editedOfficer.division}
+                  value={editedOfficer.divisionId}
                   onChange={handleChange}
                 >
                   <option value="Choose Division" disabled>

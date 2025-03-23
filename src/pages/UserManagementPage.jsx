@@ -27,50 +27,64 @@ const UserManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [queries, setQueries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUserType, setSelectedUserType] = useState("active");
 
   // API base URL - can be moved to environment variable
   const API_BASE_URL = `${backendUrl}/api`;
 
+  const fetchOfficerData = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/users/current-officer/`
+      );
+      //////console.log("fetchOfficerData", response.data);
+      setQueries(response.data.officers);
+      setTotalPages(1);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError("Failed to load dashboard data. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
-    console.log("UserManagementPage mounted");
-    const fetchOfficerData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${API_BASE_URL}/users/current-officer/`
-        );
-        setQueries(response.data.officers);
-        setTotalPages(1);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setError("Failed to load dashboard data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOfficerData();
-    return () => {
-      console.log("UserManagementPage unmounted");
-    };
-  }, []);
+    //////console.log("searchTerm: ", searchTerm);
+    ////console.log("selectedUserType: ", selectedUserType);
+    if (searchTerm === "" && selectedUserType === "active") {
+      fetchOfficerData();
+    } else {
+      filterQueries();
+    }
+  }, [currentPage, searchTerm, selectedUserType]);
 
-  // const fetchQueryDetails = async () => {
-  //   setDetailsData({
-  //     user_name: "Videsh Mahesh Gupta",
-  //     status: "On Duty",
-  //     region: "PIMPRI",
-  //     post: "traffic havaldar",
-  //     user_id: "09876543",
-  //     subregion: "SMTH",
-  //   });
-  //   setViewDetailsId("2");
-  // };
+  const filterQueries = async () => {
+    // setLoading(true);
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/users/filter-officers?searchTerm=${searchTerm}&status=${selectedUserType}`
+      );
+      ////console.log("Filter Queries Response: ",response.data);
+      if (response.data.success) {
+        setQueries(response.data.officers);
+      } else {
+        toast.error("Failed to fetch data");
+      }
+    }catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
 
   const fetchUserDetails = async (divisionId) => {
     const response = await axios.get(`${API_BASE_URL}/users/current-officer/${divisionId}`);
-    console.log(response.data);
+    ////console.log(response.data);
     if(response.data.success){
+      ////console.log(response.data);
       response.data.currentOfficer["divisionId"] = divisionId;
       setUserData(response.data.currentOfficer);
       setViewEditUserId("2");
@@ -118,9 +132,18 @@ const UserManagementPage = () => {
   };
 
   const closeEditUserPopUp = async () => {
-    console.log("Closing");
+    //////console.log("Closing");
     await setViewEditUserId(null);
-    console.log("Closed");
+    //////console.log("Closed");
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleUserTypeChange = (e) => {
+    setSelectedUserType(e.target.value);
   };
 
   const formatDate = (dateString) => {
@@ -153,6 +176,59 @@ const UserManagementPage = () => {
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
         {/* Officer Management */}
+        {/* FILTERS */}
+        <motion.div
+          className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="grid grid-cols-1 md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-row md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="relative flex-1 w-full md:w-auto">
+                <input
+                  type="text"
+                  placeholder="Search queries..."
+                  className="bg-primary text-tBase placeholder-tDisabled rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+                <Search
+                  className="absolute left-3 top-2.5 text-tSecondary"
+                  size={18}
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                <select
+                  value={selectedUserType}
+                  onChange={handleUserTypeChange}
+                  className="bg-primary text-tBase rounded-lg border-2 border-borderPrimary px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                >
+                  <option
+                    className="bg-primary hover:bg-hovPrimary"
+                    value="active"
+                  >
+                    Active Users
+                  </option>
+                  <option
+                    className="bg-primary hover:bg-hovPrimary"
+                    value="relieved"
+                  >
+                    Inactive Users
+                  </option>
+                  <option
+                    className="bg-primary hover:bg-hovPrimary"
+                    value="all"
+                  >
+                    All Users
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* QUERY TABLE */}
         <motion.div
           className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary mb-8 overflow-x-auto"
@@ -166,7 +242,7 @@ const UserManagementPage = () => {
               className="w-40 bg-secondary hover:bg-hovSecondary text-tBase py-2 px-4 rounded-md transition duration-200"
               onClick={showChangeUserPopUp}
             >
-              {isBroadcasting ? "Sending..." : "Change User"}
+              {"Change User"}
             </button>
           </div>
           {loading ? (
@@ -209,7 +285,7 @@ const UserManagementPage = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-tBase">
-                              {query.currentOfficer.name}
+                              {query.officer.name}
                             </div>
                           </div>
                         </div>
@@ -221,7 +297,7 @@ const UserManagementPage = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-300 max-w-xs truncate">
-                          {query.currentOfficer.status}
+                          {query.officer.status}
                         </div>
                       </td>
                       <td className="px-6 py-4">
