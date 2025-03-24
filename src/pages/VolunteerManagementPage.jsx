@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const VolunteerManagementPage = () => {
-    console.log("ChalanPage rendering");
+// console.log("ChalanPage rendering");
     
     const [joinRequests, setJoinRequests] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,29 +25,85 @@ const VolunteerManagementPage = () => {
         rejectedRequests: 0
     });
 
+    const [viewDetailsId, setViewDetailsId] = useState(null);
+    const [detailsData, setDetailsData] = useState(null);
+    const [detailsSelectedStatus, setDetailsSelectedStatus] = useState(""); // For details popup
+
+    const [approverName, setApproverName] = useState("");
+    const [showApproverInput, setShowApproverInput] = useState(false);
+    const [currentRequestId, setCurrentRequestId] = useState(null);
+
     // API base URL - can be moved to environment variable
     const API_BASE_URL = `${backendUrl}/api`;
 
     useEffect(() => {
-        console.log("ChalanPage mounted");
         fetchJoinRequests();
         fetchRequestStats();
         
-        return () => {
-            console.log("ChalanPage unmounted");
-        };
+        // return () => {
+        //     console.log("ChalanPage unmounted");
+        // };
     }, []);
+
+    const fetchQueryDetails = async (id) => {
+        try {
+        // const response = {
+        //     "success": true,
+        //     "count": 1,
+        //     "total": 1,
+        //     "totalPages": 1,
+        //     "currentPage": 1,
+        //     "data": [
+        //       {
+        //         "_id": "67def6fab040a47e4fa64216",
+        //         "user_id": "whatsapp:+918180094312",
+        //         "user_name": "Shripad SK",
+        //         "full_name": "Shripad Khandare",
+        //         "division": "bavdhan",
+        //         "motivation": "It's Great.",
+        //         "address": "Near Padmavati Heights , Behind HP petrol pump , sanasnagar , bhugaon Pune",
+        //         "phone": "08180094312",
+        //         "email": "shripad.khandare@mitaoe.ac.in",
+        //         "aadhar_number": "738183818377",
+        //         "aadhar_document_url": "https://pub-60eb5b9765b0491495b21d137344ee04.r2.dev/TrafficBuddyDocs/1742665464489_fdoys9h26mg.jpeg",
+        //         "status": "Pending",
+        //         "session_id": "join_1742665430593_wfg1b1ik",
+        //         "session_expires": "2025-03-23T17:44:24.384Z",
+        //         "applied_at": "2025-03-22T17:44:26.254Z",
+        //         "createdAt": "2025-03-22T17:44:26.257Z",
+        //         "updatedAt": "2025-03-22T17:44:26.257Z",
+        //         "__v": 0
+        //       }
+        //     ]
+        //   };
+        console.log("Here");
+        const response = await axios.get(`${backendUrl}/api/applications/${id}`);
+        console.log("Also", response.data);
+        if (response.data.success) {
+            setDetailsData(response.data.data);
+            setViewDetailsId(response.data.data._id);
+            setDetailsSelectedStatus(response.data.data.status); // Set initial status for details popup
+        }
+        } catch (error) {
+        console.error("Error fetching query details:", error);
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+      };
+    const closeDetails = () => {
+        setViewDetailsId(null);
+        setDetailsData(null);
+        setDetailsSelectedStatus(""); // Reset details popup status when closing
+      };
 
     const fetchJoinRequests = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${API_BASE_URL}/queries`, {
-                params: {
-                    query_type: "Join Request",
-                    limit: 100
-                }
-            });
-            console.log("Join requests data:", response.data);
+            const response = await axios.get(`${API_BASE_URL}/applications`);
+            console.log("Join requests data:", response.data.data);
             setJoinRequests(response.data.data || []);
             setLoading(false);
         } catch (error) {
@@ -59,20 +115,19 @@ const VolunteerManagementPage = () => {
 
     const fetchRequestStats = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/queries/statistics`);
-            console.log("Stats response:", response.data);
+            const response = await axios.get(`${API_BASE_URL}/applications/statistics`);
+            //console.log("Stats response:", response.data);
             
-            // Add defensive checks for data structure
-            const data = response.data || {};
-            const byType = data.stats?.byType || {};
-            const byStatus = data.stats?.byStatus || {};
-            
+            if(response.data.success){
             setStats({
-                totalRequests: byType.joinRequest || 0,
-                pendingRequests: byStatus.pending || 0,
-                approvedRequests: byStatus.resolved || 0,
-                rejectedRequests: byStatus.rejected || 0
+                totalRequests: response.data.total || 0,
+                pendingRequests: response.data.pending || 0,
+                approvedRequests: response.data.approved || 0,
+                rejectedRequests: response.data.rejected || 0
             });
+        }else{
+            toast.error("Failed to load statistics");
+        }
         } catch (error) {
             console.error("Error fetching statistics:", error);
             // Set default stats to avoid undefined values
@@ -86,16 +141,18 @@ const VolunteerManagementPage = () => {
         }
     };
 
-    const updateRequestStatus = async (id, status, note) => {
+    const updateRequestStatus = async (id, status,approverName, note) => {
         try {
-            await axios.put(`${API_BASE_URL}/queries/${id}/status`, {
+            await axios.put(`${API_BASE_URL}/applications/${id}/status`, {
                 status,
-                resolution_note: note
+                verification_notes: note,
+                verified_by: approverName
             });
             
             toast.success(`Request ${status.toLowerCase()} successfully`);
             fetchJoinRequests();
             fetchRequestStats();
+            closeDetails();
         } catch (error) {
             console.error(`Error updating request status:`, error);
             toast.error("Failed to update request status");
@@ -103,7 +160,19 @@ const VolunteerManagementPage = () => {
     };
 
     const handleApprove = (id) => {
-        updateRequestStatus(id, "Resolved", "Join request approved. Welcome to Traffic Buddy team!");
+        setCurrentRequestId(id);
+        setShowApproverInput(true);
+    };
+
+    const confirmApprove = () => {
+        if (!approverName.trim()) {
+            toast.error("Please enter your name to approve the request");
+            return;
+        }
+        updateRequestStatus(currentRequestId, "Approved",approverName, `Join request approved by ${approverName}. Welcome to Traffic Buddy team!`);
+        setShowApproverInput(false);
+        setApproverName("");
+        setCurrentRequestId(null);
     };
 
     const handleReject = (id) => {
@@ -166,7 +235,7 @@ const VolunteerManagementPage = () => {
             
         // Filter by status based on active tab
         if (activeTab === "pending") return matchesSearch && request.status === "Pending";
-        if (activeTab === "approved") return matchesSearch && request.status === "Resolved";
+        if (activeTab === "approved") return matchesSearch && request.status === "Approved";
         if (activeTab === "rejected") return matchesSearch && request.status === "Rejected";
         return matchesSearch; // "all" tab
     });
@@ -327,8 +396,8 @@ const VolunteerManagementPage = () => {
                                         <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">User</th>
                                         <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Details</th>
                                         <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-3 bg-primary text-right text-xs font-medium text-tBase uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-3 bg-primary text-left text-xs font-medium text-tBase uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-3 bg-primary text-center text-xs font-medium text-tBase uppercase tracking-wider">Division</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-seperationSecondary">
@@ -367,38 +436,26 @@ const VolunteerManagementPage = () => {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                         ${request.status === 'Pending' ? 'bg-yellow-800 text-yellow-100' : 
-                                                        request.status === 'Resolved' ? 'bg-green-800 text-green-100' : 
+                                                        request.status === 'Approved' ? 'bg-green-800 text-green-100' : 
                                                         'bg-red-800 text-red-100'}`}>
                                                         {request.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-tSecondary">
-                                                    {new Date(request.timestamp).toLocaleDateString()}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    {request.status === 'Pending' ? (
-                                                        <div className="flex justify-end space-x-2">
-                                                            <button
-                                                                onClick={() => handleApprove(request._id)}
-                                                                className="text-green-500 hover:text-green-400 bg-primary rounded-md p-2 transition"
-                                                                title="Approve"
-                                                            >
-                                                                <Check className="w-4 h-4" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleReject(request._id)}
-                                                                className="text-red-500 hover:text-red-400 bg-primary rounded-md p-2 transition"
-                                                                title="Reject"
-                                                            >
-                                                                <X className="w-4 h-4" />
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-gray-500 italic">
-                                                            {request.status === 'Resolved' ? 'Approved' : 'Rejected'}
-                                                        </span>
-                                                    )}
-                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                                        <div className="flex items-center space-x-2">
+                                                                          <button
+                                                                            className="text-blue-400 hover:text-blue-300"
+                                                                            onClick={() => fetchQueryDetails(request._id)}
+                                                                          >
+                                                                            Details
+                                                                          </button>
+                                                                        </div>
+                                                                      </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100 capitalize ">
+                          {request.division}
+                        </span>
+                      </td>
                                             </tr>
                                         );
                                     })}
@@ -407,6 +464,163 @@ const VolunteerManagementPage = () => {
                         </div>
                     )}
                 </motion.div>
+
+
+{viewDetailsId && detailsData && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <motion.div
+      className="bg-bgSecondary rounded-xl p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+    >
+      <div className="flex justify-between items-start">
+        <h2 className="text-xl font-semibold text-tBase">
+          Volunteer Joining Request
+        </h2>
+        <button
+          className="text-gray-400 hover:text-tBase"
+          onClick={closeDetails}
+        >
+          Close
+        </button>
+      </div>
+
+      <div className="mt-4 flex">
+        {detailsData.aadhar_document_url && (
+          <div className="flex-shrink-0 mr-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-2">
+              Aadhar Card:
+            </h3>
+            <img
+              src={detailsData.aadhar_document_url}
+              alt="Aadhar Card"
+              className="rounded-lg object-contain max-w-full"
+              style={{ maxHeight: "400px" }}
+            />
+          </div>
+        )}
+
+        <div className="flex-grow space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">
+                Name:
+              </h3>
+              <p className="text-gray-200">{detailsData.full_name}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">
+                Division:
+              </h3>
+              <p className="text-gray-200">{detailsData.division}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">
+                Aadhar Number:
+              </h3>
+              <p className="text-gray-200">{detailsData.aadhar_number}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">
+                Phone Number:
+              </h3>
+              <p className="text-gray-200">{detailsData.phone}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-400">
+                Email:
+              </h3>
+              <p className="text-gray-200">{detailsData.email}</p>
+            </div>
+
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-medium text-gray-400">
+                Address:
+              </h3>
+              <p className="text-gray-200">{detailsData.address}</p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-400">
+              Applied At:
+            </h3>
+            <p className="text-gray-200">{formatDate(detailsData.applied_at)}</p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-400">
+              Motivation:
+            </h3>
+            <p className="text-gray-200">{detailsData.motivation}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end space-x-4">
+        {detailsData.status === 'Pending' ? (
+          <>
+            <button
+              onClick={() => handleApprove(detailsData._id)}
+              className="text-green-500 hover:text-green-400 bg-primary rounded-md p-4 transition text-lg"
+              title="Approve"
+            >
+              <Check className="w-6 h-6" />
+              Approve
+            </button>
+            <button
+              onClick={() => handleReject(detailsData._id)}
+              className="text-red-500 hover:text-red-400 bg-primary rounded-md p-4 transition text-lg"
+              title="Reject"
+            >
+              <X className="w-6 h-6" />
+              Reject
+            </button>
+          </>
+        ) : (
+          <span className="text-gray-500 italic">
+            {detailsData.status === 'Approved' ? 'Approved' : 'Rejected'}
+          </span>
+        )}
+      </div>
+    </motion.div>
+  </div>
+)}
+
+{showApproverInput && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-bgSecondary rounded-xl p-6 max-w-md w-full">
+      <h3 className="text-xl font-semibold text-tBase mb-4">Approve Request</h3>
+      <input
+        type="text"
+        className="w-full bg-primary text-tBase rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-secondary"
+        placeholder="Enter your name"
+        value={approverName}
+        onChange={(e) => setApproverName(e.target.value)}
+      />
+      <div className="flex justify-end space-x-4">
+        <button
+          className="bg-red-500 hover:bg-red-600 text-tBase py-2 px-4 rounded-md transition"
+          onClick={() => setShowApproverInput(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-green-500 hover:bg-green-600 text-tBase py-2 px-4 rounded-md transition"
+          onClick={confirmApprove}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
             </main>
         </div>
     );
