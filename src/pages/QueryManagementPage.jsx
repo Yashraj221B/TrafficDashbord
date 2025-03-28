@@ -66,6 +66,7 @@ const QueryManagementPage = () => {
   const [departmentEmail, setDepartmentEmail] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [emailSending, setEmailSending] = useState(false);
+  const [isAggregate, setIsAggregate] = useState(true);
 
   const [queryStats, setQueryStats] = useState({
     byStatus: { pending: 0, inProgress: 0, resolved: 0, rejected: 0 },
@@ -162,7 +163,7 @@ const QueryManagementPage = () => {
     if (!timelineActive) {
       fetchQueries();
     }
-  }, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive]);
+  }, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive, isAggregate]);
 
   useEffect(() => {
     calculateFilteredStats();
@@ -245,7 +246,7 @@ const QueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20&division=${divisionId}`;
+      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20&division=${divisionId}&aggregate=${isAggregate}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -352,7 +353,7 @@ const QueryManagementPage = () => {
 
     try {
       const response = await axios.get(
-        `${backendUrl}/api/queries/time-filter?start=${startDate}&end=${endDate}&division=${divisionId}`
+        `${backendUrl}/api/queries/time-filter?start=${startDate}&end=${endDate}&division=${divisionId}&aggregate=${isAggregate}`
       );
 
       if (response.data.success) {
@@ -372,6 +373,7 @@ const QueryManagementPage = () => {
     setStartDate("");
     setEndDate("");
     setTimelineActive(false);
+    setIsAggregate(true);
     fetchQueries();
   };
 
@@ -460,6 +462,11 @@ const QueryManagementPage = () => {
     }
   };
 
+  const handleAggregateChange = (e) => {
+    setIsAggregate(e.target.checked);
+    setCurrentPage(1);
+  };
+
   const handleResolveSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -517,19 +524,19 @@ const QueryManagementPage = () => {
         if (queries.length < 100) {
           dataToDownload = queries;
         } else {
-          let url = `${backendUrl}/api/queries?limit=1000&division=${divisionId}`;
+          let url = `${backendUrl}/api/queries?limit=1000&division=${divisionId}&aggregate=${isAggregate}`;
           if (searchTerm) url += `&search=${searchTerm}`;
           if (selectedType && selectedType !== "all") url += `&query_type=${selectedType}`;
           if (selectedStatus && selectedStatus !== "all") url += `&status=${selectedStatus}`;
           if (timelineActive && startDate && endDate) {
-            url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}`;
+            url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}&aggregate=${isAggregate}`;
           }
           const response = await axios.get(url);
           if (response.data.success) dataToDownload = response.data.data;
         }
       } else {
         const response = await axios.get(
-          `${backendUrl}/api/queries?limit=1000&division=${divisionId}`
+          `${backendUrl}/api/queries?limit=1000&division=${divisionId}&aggregate=${isAggregate}`
         );
         if (response.data.success) dataToDownload = response.data.data;
       }
@@ -717,6 +724,16 @@ const QueryManagementPage = () => {
                     Rejected
                   </option>
                 </select>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="bg-primary text-tBase rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                    checked={isAggregate}
+                    onChange={handleAggregateChange}
+                  />
+                  <span className="text-tBase ml-2">Show Aggregate</span>
+                </div>
 
                 <button
                   onClick={downloadAsExcel}

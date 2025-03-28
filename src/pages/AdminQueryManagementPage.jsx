@@ -55,6 +55,7 @@ const AdminQueryManagementPage = () => {
   const [departmentEmail, setDepartmentEmail] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [emailSending, setEmailSending] = useState(false);
+  const [isAggregate, setIsAggregate] = useState(true);
 
   // Original query stats (all data)
   const [queryStats, setQueryStats] = useState({
@@ -125,7 +126,7 @@ const AdminQueryManagementPage = () => {
     if (!timelineActive) {
       fetchQueries();
     }
-  }, [currentPage, searchTerm, selectedType, selectedStatus, selectedDivision, timelineActive]);
+  }, [currentPage, searchTerm, selectedType, selectedStatus, selectedDivision, timelineActive, isAggregate]);
 
   // Update filtered stats whenever queries change
   useEffect(() => {
@@ -210,7 +211,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20`;
+      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&aggregate=${isAggregate}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -381,6 +382,7 @@ const AdminQueryManagementPage = () => {
     setStartDate("");
     setEndDate("");
     setTimelineActive(false);
+    setIsAggregate(true);
     fetchQueries();
   };
 
@@ -415,6 +417,11 @@ const AdminQueryManagementPage = () => {
     return date.toLocaleString();
   };
 
+  const handleAggregateChange = (e) => {
+    setIsAggregate(e.target.checked);
+    setCurrentPage(1);
+  };
+
   const getBadgeColor = (status) => {
     switch (status) {
       case "Pending":
@@ -446,7 +453,7 @@ const AdminQueryManagementPage = () => {
         if (queries.length < 100) {
           dataToDownload = queries;
         } else {
-          let url = `http://localhost:3000/api/queries?limit=1000`;
+          let url = `http://localhost:3000/api/queries?limit=1000?aggregate=${isAggregate}`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -466,7 +473,7 @@ const AdminQueryManagementPage = () => {
           }
 
           if (timelineActive && startDate && endDate) {
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000`;
+            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&aggregate=${isAggregate}`;
             if (selectedDivision) {
               const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
               url += `&division=${divisionId}`;
@@ -480,7 +487,7 @@ const AdminQueryManagementPage = () => {
         }
       } else {
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000`
+          `http://localhost:3000/api/queries?limit=1000&aggregate=${isAggregate}`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;
@@ -833,6 +840,16 @@ const AdminQueryManagementPage = () => {
                     Rejected
                   </option>
                 </select>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="bg-primary text-tBase rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                    checked={isAggregate}
+                    onChange={handleAggregateChange}
+                  />
+                  <span className="text-tBase ml-2">Show Aggregate</span>
+                </div>
 
                 <button
                   onClick={downloadAsExcel}
