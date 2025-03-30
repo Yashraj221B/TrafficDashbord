@@ -5,12 +5,66 @@ import StatCard from "../components/common/StatCard";
 import { motion } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Select from "react-select";
 
 const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+
+  // Reason I hate multi dropdowns
+  // TODO: Add themes support
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: "#1e1e1e",
+      borderColor: "#3c3c3c",
+      color: "#d4d4d4",
+      boxShadow: "none",
+      "&:hover": {
+        borderColor: "#5a5a5a",
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#1e1e1e",
+      color: "#d4d4d4",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#333333" : "#1e1e1e",
+      color: state.isSelected ? "#ffffff" : "#d4d4d4",
+      "&:hover": {
+        backgroundColor: "#333333",
+      },
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: "#333333",
+      color: "#d4d4d4",
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: "#d4d4d4",
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: "#d4d4d4",
+      "&:hover": {
+        backgroundColor: "#444444",
+        color: "#ffffff",
+      },
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: "#a1a1a1",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#d4d4d4",
+    }),
+  };
+
+
 const VolunteerManagementPage = () => {
-// console.log("ChalanPage rendering");
-    
     const [joinRequests, setJoinRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -33,77 +87,69 @@ const VolunteerManagementPage = () => {
     const [showApproverInput, setShowApproverInput] = useState(false);
     const [currentRequestId, setCurrentRequestId] = useState(null);
 
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const divisionOptions = [
+        { value: "MAHALUNGE", label: "Mahalunge" },
+        { value: "CHAKAN", label: "Chakan" },
+        { value: "DIGHI ALANDI", label: "Dighi-Alandi" },
+        { value: "BHOSARI", label: "Bhosari" },
+        { value: "TALWADE", label: "Talwade" },
+        { value: "PIMPRI", label: "Pimpri" },
+        { value: "CHINCHWAD", label: "Chinchwad" },
+        { value: "NIGDI", label: "Nigdi" },
+        { value: "SANGAVI", label: "Sangavi" },
+        { value: "HINJEWADI", label: "Hinjewadi" },
+        { value: "WAKAD", label: "Wakad" },
+        { value: "BAVDHAN", label: "Bavdhan" },
+        { value: "DEHUROAD", label: "Dehuroad" },
+        { value: "TALEGAON", label: "Talegaon" }
+      ];
+      
+
+    const handleSelectAll = () => {
+        setSelectedOptions(divisionOptions);
+    };
+
+    const handleDeselectAll = () => {
+        setSelectedOptions([]);
+    };
+
     // API base URL - can be moved to environment variable
     const API_BASE_URL = `${backendUrl}/api`;
 
     useEffect(() => {
         fetchJoinRequests();
         fetchRequestStats();
-        
-        // return () => {
-        //     console.log("ChalanPage unmounted");
-        // };
     }, []);
 
     const fetchQueryDetails = async (id) => {
         try {
-        // const response = {
-        //     "success": true,
-        //     "count": 1,
-        //     "total": 1,
-        //     "totalPages": 1,
-        //     "currentPage": 1,
-        //     "data": [
-        //       {
-        //         "_id": "67def6fab040a47e4fa64216",
-        //         "user_id": "whatsapp:+918180094312",
-        //         "user_name": "Shripad SK",
-        //         "full_name": "Shripad Khandare",
-        //         "division": "bavdhan",
-        //         "motivation": "It's Great.",
-        //         "address": "Near Padmavati Heights , Behind HP petrol pump , sanasnagar , bhugaon Pune",
-        //         "phone": "08180094312",
-        //         "email": "shripad.khandare@mitaoe.ac.in",
-        //         "aadhar_number": "738183818377",
-        //         "aadhar_document_url": "https://pub-60eb5b9765b0491495b21d137344ee04.r2.dev/TrafficBuddyDocs/1742665464489_fdoys9h26mg.jpeg",
-        //         "status": "Pending",
-        //         "session_id": "join_1742665430593_wfg1b1ik",
-        //         "session_expires": "2025-03-23T17:44:24.384Z",
-        //         "applied_at": "2025-03-22T17:44:26.254Z",
-        //         "createdAt": "2025-03-22T17:44:26.257Z",
-        //         "updatedAt": "2025-03-22T17:44:26.257Z",
-        //         "__v": 0
-        //       }
-        //     ]
-        //   };
-        console.log("Here");
-        const response = await axios.get(`${backendUrl}/api/applications/${id}`);
-        console.log("Also", response.data);
-        if (response.data.success) {
-            setDetailsData(response.data.data);
-            setViewDetailsId(response.data.data._id);
-            setDetailsSelectedStatus(response.data.data.status); // Set initial status for details popup
-        }
+            const response = await axios.get(`${backendUrl}/api/applications/${id}`);
+            if (response.data.success) {
+                setDetailsData(response.data.data);
+                setViewDetailsId(response.data.data._id);
+                setDetailsSelectedStatus(response.data.data.status); // Set initial status for details popup
+            }
         } catch (error) {
-        console.error("Error fetching query details:", error);
+            console.error("Error fetching query details:", error);
         }
     };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString();
-      };
+    };
+
     const closeDetails = () => {
         setViewDetailsId(null);
         setDetailsData(null);
         setDetailsSelectedStatus(""); // Reset details popup status when closing
-      };
+    };
 
     const fetchJoinRequests = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/applications`);
-            console.log("Join requests data:", response.data.data);
             setJoinRequests(response.data.data || []);
             setLoading(false);
         } catch (error) {
@@ -116,21 +162,18 @@ const VolunteerManagementPage = () => {
     const fetchRequestStats = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/applications/statistics`);
-            //console.log("Stats response:", response.data);
-            
-            if(response.data.success){
-            setStats({
-                totalRequests: response.data.total || 0,
-                pendingRequests: response.data.pending || 0,
-                approvedRequests: response.data.approved || 0,
-                rejectedRequests: response.data.rejected || 0
-            });
-        }else{
-            toast.error("Failed to load statistics");
-        }
+            if (response.data.success) {
+                setStats({
+                    totalRequests: response.data.total || 0,
+                    pendingRequests: response.data.pending || 0,
+                    approvedRequests: response.data.approved || 0,
+                    rejectedRequests: response.data.rejected || 0
+                });
+            } else {
+                toast.error("Failed to load statistics");
+            }
         } catch (error) {
             console.error("Error fetching statistics:", error);
-            // Set default stats to avoid undefined values
             setStats({
                 totalRequests: 0,
                 pendingRequests: 0,
@@ -141,14 +184,14 @@ const VolunteerManagementPage = () => {
         }
     };
 
-    const updateRequestStatus = async (id, status,approverName, note) => {
+    const updateRequestStatus = async (id, status, approverName, note) => {
         try {
             await axios.put(`${API_BASE_URL}/applications/${id}/status`, {
                 status,
                 verification_notes: note,
                 verified_by: approverName
             });
-            
+
             toast.success(`Request ${status.toLowerCase()} successfully`);
             fetchJoinRequests();
             fetchRequestStats();
@@ -169,7 +212,7 @@ const VolunteerManagementPage = () => {
             toast.error("Please enter your name to approve the request");
             return;
         }
-        updateRequestStatus(currentRequestId, "Approved",approverName, `Join request approved by ${approverName}. Welcome to Traffic Buddy team!`);
+        updateRequestStatus(currentRequestId, "Approved", approverName, `Join request approved by ${approverName}. Welcome to Traffic Buddy team!`);
         setShowApproverInput(false);
         setApproverName("");
         setCurrentRequestId(null);
@@ -190,7 +233,7 @@ const VolunteerManagementPage = () => {
             await axios.post(`${API_BASE_URL}/queries/broadcast`, {
                 message: broadcastMessage
             });
-            
+
             toast.success("Message broadcast successfully to all users");
             setBroadcastMessage("");
         } catch (error) {
@@ -213,7 +256,7 @@ const VolunteerManagementPage = () => {
                 message: broadcastMessage,
                 area: broadcastArea
             });
-            
+
             toast.success(`Message broadcast successfully to volunteers in ${broadcastArea}`);
             setBroadcastMessage("");
             setBroadcastArea("");
@@ -227,17 +270,16 @@ const VolunteerManagementPage = () => {
 
     const filteredRequests = joinRequests.filter(request => {
         const searchLower = searchTerm.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
             (request.user_name && request.user_name.toLowerCase().includes(searchLower)) ||
             (request.description && request.description.toLowerCase().includes(searchLower)) ||
             (request.email && request.email?.toLowerCase().includes(searchLower)) ||
             (request.phone && request.phone?.includes(searchTerm));
-            
-        // Filter by status based on active tab
+
         if (activeTab === "pending") return matchesSearch && request.status === "Pending";
         if (activeTab === "approved") return matchesSearch && request.status === "Approved";
         if (activeTab === "rejected") return matchesSearch && request.status === "Rejected";
-        return matchesSearch; // "all" tab
+        return matchesSearch;
     });
 
     return (
@@ -286,7 +328,7 @@ const VolunteerManagementPage = () => {
                     transition={{ delay: 0.2 }}
                 >
                     <h2 className="text-xl font-semibold text-tBase mb-4">Broadcast Messages</h2>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Broadcast to all users */}
                         <div className="space-y-3">
@@ -335,6 +377,41 @@ const VolunteerManagementPage = () => {
                     </div>
                 </motion.div>
 
+                {/* Multi-Select Dropdown Section */}
+                <motion.div
+                    className="mb-8 bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-gray-700"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <h2 className="text-xl font-semibold text-tBase mb-4">Multi-Select Dropdown</h2>
+                    <div className="space-y-4">
+                        <Select
+                            isMulti
+                            options={divisionOptions}
+                            value={selectedOptions}
+                            onChange={setSelectedOptions}
+                            styles={customStyles}
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                        />
+                        <div className="flex space-x-4">
+                            <button
+                                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+                                onClick={handleSelectAll}
+                            >
+                                Select All
+                            </button>
+                            <button
+                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
+                                onClick={handleDeselectAll}
+                            >
+                                Deselect All
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+
                 {/* Join Requests Management */}
                 <motion.div
                     className="bg-bgSecondary bg-opacity-50 backdrop-blur-md shadow-lg shadow-bgPrimary rounded-xl p-6 border border-borderPrimary"
@@ -344,7 +421,7 @@ const VolunteerManagementPage = () => {
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                         <h2 className="text-xl font-semibold text-tBase mb-4 md:mb-0">Join Requests</h2>
-                        
+
                         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                             <div className="relative">
                                 <input
@@ -356,7 +433,7 @@ const VolunteerManagementPage = () => {
                                 />
                                 <Search className="w-4 h-4 absolute left-3 top-3 text-tSecondary" />
                             </div>
-                            
+
                             <div className="inline-flex rounded-md shadow-sm" role="group">
                                 {["all", "pending", "approved", "rejected"].map((tab) => (
                                     <button
@@ -402,7 +479,6 @@ const VolunteerManagementPage = () => {
                                 </thead>
                                 <tbody className="bg-bgSecondary bg-opacity-50 divide-y divide-seperationSecondary">
                                     {filteredRequests.map((request) => {
-                                        // Extract name, email, phone from description if not available directly
                                         const descLines = request.description ? request.description.split('\n') : [];
                                         const extractInfo = (prefix) => {
                                             const line = descLines.find(l => l.toLowerCase().includes(prefix.toLowerCase()));
@@ -442,20 +518,20 @@ const VolunteerManagementPage = () => {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <div className="flex items-center space-x-2">
-                                                                          <button
-                                                                            className="text-blue-400 hover:text-blue-300"
-                                                                            onClick={() => fetchQueryDetails(request._id)}
-                                                                          >
-                                                                            Details
-                                                                          </button>
-                                                                        </div>
-                                                                      </td>
+                                                    <div className="flex items-center space-x-2">
+                                                        <button
+                                                            className="text-blue-400 hover:text-blue-300"
+                                                            onClick={() => fetchQueryDetails(request._id)}
+                                                        >
+                                                            Details
+                                                        </button>
+                                                    </div>
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100 capitalize ">
-                          {request.division}
-                        </span>
-                      </td>
+                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100 capitalize ">
+                                                        {request.division}
+                                                    </span>
+                                                </td>
                                             </tr>
                                         );
                                     })}
@@ -465,162 +541,160 @@ const VolunteerManagementPage = () => {
                     )}
                 </motion.div>
 
+                {viewDetailsId && detailsData && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            className="bg-bgSecondary rounded-xl p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                        >
+                            <div className="flex justify-between items-start">
+                                <h2 className="text-xl font-semibold text-tBase">
+                                    Volunteer Joining Request
+                                </h2>
+                                <button
+                                    className="text-gray-400 hover:text-tBase"
+                                    onClick={closeDetails}
+                                >
+                                    Close
+                                </button>
+                            </div>
 
-{viewDetailsId && detailsData && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <motion.div
-      className="bg-bgSecondary rounded-xl p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-    >
-      <div className="flex justify-between items-start">
-        <h2 className="text-xl font-semibold text-tBase">
-          Volunteer Joining Request
-        </h2>
-        <button
-          className="text-gray-400 hover:text-tBase"
-          onClick={closeDetails}
-        >
-          Close
-        </button>
-      </div>
+                            <div className="mt-4 flex">
+                                {detailsData.aadhar_document_url && (
+                                    <div className="flex-shrink-0 mr-6">
+                                        <h3 className="text-sm font-medium text-gray-400 mb-2">
+                                            Aadhar Card:
+                                        </h3>
+                                        <img
+                                            src={detailsData.aadhar_document_url}
+                                            alt="Aadhar Card"
+                                            className="rounded-lg object-contain max-w-full"
+                                            style={{ maxHeight: "400px" }}
+                                        />
+                                    </div>
+                                )}
 
-      <div className="mt-4 flex">
-        {detailsData.aadhar_document_url && (
-          <div className="flex-shrink-0 mr-6">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">
-              Aadhar Card:
-            </h3>
-            <img
-              src={detailsData.aadhar_document_url}
-              alt="Aadhar Card"
-              className="rounded-lg object-contain max-w-full"
-              style={{ maxHeight: "400px" }}
-            />
-          </div>
-        )}
+                                <div className="flex-grow space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Name:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.full_name}</p>
+                                        </div>
 
-        <div className="flex-grow space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">
-                Name:
-              </h3>
-              <p className="text-gray-200">{detailsData.full_name}</p>
-            </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Division:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.division}</p>
+                                        </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">
-                Division:
-              </h3>
-              <p className="text-gray-200">{detailsData.division}</p>
-            </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Aadhar Number:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.aadhar_number}</p>
+                                        </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">
-                Aadhar Number:
-              </h3>
-              <p className="text-gray-200">{detailsData.aadhar_number}</p>
-            </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Phone Number:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.phone}</p>
+                                        </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">
-                Phone Number:
-              </h3>
-              <p className="text-gray-200">{detailsData.phone}</p>
-            </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Email:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.email}</p>
+                                        </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400">
-                Email:
-              </h3>
-              <p className="text-gray-200">{detailsData.email}</p>
-            </div>
+                                        <div className="md:col-span-2">
+                                            <h3 className="text-sm font-medium text-gray-400">
+                                                Address:
+                                            </h3>
+                                            <p className="text-gray-200">{detailsData.address}</p>
+                                        </div>
+                                    </div>
 
-            <div className="md:col-span-2">
-              <h3 className="text-sm font-medium text-gray-400">
-                Address:
-              </h3>
-              <p className="text-gray-200">{detailsData.address}</p>
-            </div>
-          </div>
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-400">
+                                            Applied At:
+                                        </h3>
+                                        <p className="text-gray-200">{formatDate(detailsData.applied_at)}</p>
+                                    </div>
 
-          <div>
-            <h3 className="text-sm font-medium text-gray-400">
-              Applied At:
-            </h3>
-            <p className="text-gray-200">{formatDate(detailsData.applied_at)}</p>
-          </div>
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-400">
+                                            Motivation:
+                                        </h3>
+                                        <p className="text-gray-200">{detailsData.motivation}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-          <div>
-            <h3 className="text-sm font-medium text-gray-400">
-              Motivation:
-            </h3>
-            <p className="text-gray-200">{detailsData.motivation}</p>
-          </div>
-        </div>
-      </div>
+                            <div className="mt-6 flex justify-end space-x-4">
+                                {detailsData.status === 'Pending' ? (
+                                    <>
+                                        <button
+                                            onClick={() => handleApprove(detailsData._id)}
+                                            className="text-green-500 hover:text-green-400 bg-primary rounded-md p-4 transition text-lg"
+                                            title="Approve"
+                                        >
+                                            <Check className="w-6 h-6" />
+                                            Approve
+                                        </button>
+                                        <button
+                                            onClick={() => handleReject(detailsData._id)}
+                                            className="text-red-500 hover:text-red-400 bg-primary rounded-md p-4 transition text-lg"
+                                            title="Reject"
+                                        >
+                                            <X className="w-6 h-6" />
+                                            Reject
+                                        </button>
+                                    </>
+                                ) : (
+                                    <span className="text-gray-500 italic">
+                                        {detailsData.status === 'Approved' ? 'Approved' : 'Rejected'}
+                                    </span>
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
 
-      <div className="mt-6 flex justify-end space-x-4">
-        {detailsData.status === 'Pending' ? (
-          <>
-            <button
-              onClick={() => handleApprove(detailsData._id)}
-              className="text-green-500 hover:text-green-400 bg-primary rounded-md p-4 transition text-lg"
-              title="Approve"
-            >
-              <Check className="w-6 h-6" />
-              Approve
-            </button>
-            <button
-              onClick={() => handleReject(detailsData._id)}
-              className="text-red-500 hover:text-red-400 bg-primary rounded-md p-4 transition text-lg"
-              title="Reject"
-            >
-              <X className="w-6 h-6" />
-              Reject
-            </button>
-          </>
-        ) : (
-          <span className="text-gray-500 italic">
-            {detailsData.status === 'Approved' ? 'Approved' : 'Rejected'}
-          </span>
-        )}
-      </div>
-    </motion.div>
-  </div>
-)}
-
-{showApproverInput && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-bgSecondary rounded-xl p-6 max-w-md w-full">
-      <h3 className="text-xl font-semibold text-tBase mb-4">Approve Request</h3>
-      <input
-        type="text"
-        className="w-full bg-primary text-tBase rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-secondary"
-        placeholder="Enter your name"
-        value={approverName}
-        onChange={(e) => setApproverName(e.target.value)}
-      />
-      <div className="flex justify-end space-x-4">
-        <button
-          className="bg-red-500 hover:bg-red-600 text-tBase py-2 px-4 rounded-md transition"
-          onClick={() => setShowApproverInput(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-green-500 hover:bg-green-600 text-tBase py-2 px-4 rounded-md transition"
-          onClick={confirmApprove}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+                {showApproverInput && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-bgSecondary rounded-xl p-6 max-w-md w-full">
+                            <h3 className="text-xl font-semibold text-tBase mb-4">Approve Request</h3>
+                            <input
+                                type="text"
+                                className="w-full bg-primary text-tBase rounded-md p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-secondary"
+                                placeholder="Enter your name"
+                                value={approverName}
+                                onChange={(e) => setApproverName(e.target.value)}
+                            />
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    className="bg-red-500 hover:bg-red-600 text-tBase py-2 px-4 rounded-md transition"
+                                    onClick={() => setShowApproverInput(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="bg-green-500 hover:bg-green-600 text-tBase py-2 px-4 rounded-md transition"
+                                    onClick={confirmApprove}
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
