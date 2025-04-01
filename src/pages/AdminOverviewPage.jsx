@@ -14,9 +14,9 @@ import DivisionNames from "../utils/DivisionNames";
 
 const userData = JSON.parse(localStorage.getItem("userData"));
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
 const AdminOverviewPage = () => {
-  const backendUrl =
-    import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 
   const [dashboardData, setDashboardData] = useState({
     queriesPerDay: [],

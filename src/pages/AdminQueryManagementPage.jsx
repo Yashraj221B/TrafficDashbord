@@ -22,6 +22,8 @@ import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },
   { value: "CHAKAN", label: "Chakan", id: "67dc019a6532e1c784d60840" },
@@ -136,7 +138,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueryStats = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/statistics`
+        `${backendUrl}/api/queries/statistics`
       );
       if (response.data.success) {
         setQueryStats(response.data.stats);
@@ -211,7 +213,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&aggregate=${isAggregate}`;
+      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20&aggregate=${isAggregate}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -247,7 +249,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueryDetails = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/${id}`
+        `${backendUrl}/api/queries/${id}`
       );
       if (response.data.success) {
         setDetailsData(response.data.data);
@@ -261,7 +263,7 @@ const AdminQueryManagementPage = () => {
 
   const updateQueryStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:3000/api/queries/${id}/status`, {
+      await axios.put(`${backendUrl}/api/queries/${id}/status`, {
         status: newStatus,
       });
 
@@ -289,11 +291,11 @@ const AdminQueryManagementPage = () => {
       const queryId = selectedQueryForEmail._id || selectedQueryForEmail.id;
 
       console.log(
-        `Making request to: http://localhost:3000/api/queries/${queryId}/notify-department`
+        `Making request to: ${backendUrl}/api/queries/${queryId}/notify-department`
       );
 
       const response = await axios.post(
-        `http://localhost:3000/api/queries/${queryId}/notify-department`,
+        `${backendUrl}/api/queries/${queryId}/notify-department`,
         {
           email: departmentEmail,
           departmentName: departmentName,
@@ -358,7 +360,7 @@ const AdminQueryManagementPage = () => {
       );
 
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
+        `${backendUrl}/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -453,7 +455,7 @@ const AdminQueryManagementPage = () => {
         if (queries.length < 100) {
           dataToDownload = queries;
         } else {
-          let url = `http://localhost:3000/api/queries?limit=1000?aggregate=${isAggregate}`;
+          let url = `${backendUrl}/api/queries?limit=1000?aggregate=${isAggregate}`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -473,7 +475,7 @@ const AdminQueryManagementPage = () => {
           }
 
           if (timelineActive && startDate && endDate) {
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&aggregate=${isAggregate}`;
+            url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&aggregate=${isAggregate}`;
             if (selectedDivision) {
               const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
               url += `&division=${divisionId}`;
@@ -487,7 +489,7 @@ const AdminQueryManagementPage = () => {
         }
       } else {
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000&aggregate=${isAggregate}`
+          `${backendUrl}/api/queries?limit=1000&aggregate=${isAggregate}`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;
@@ -625,13 +627,13 @@ const AdminQueryManagementPage = () => {
       formData.append("resolution_note", message);
       if (image) formData.append("image", image);
 
-      console.log("Submitting to:", `http://localhost:3000/api/reports/${selectedQueryForResolve._id}/resolve`);
+      console.log("Submitting to:", `${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`);
       console.log("FormData contents:");
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
 
-      const response = await fetch(`http://localhost:3000/api/reports/${selectedQueryForResolve._id}/resolve`, {
+      const response = await fetch(`${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`, {
         method: "POST",
         body: formData,
       });
