@@ -22,7 +22,7 @@ import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },

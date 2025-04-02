@@ -12,7 +12,7 @@ import { FileSearch2 } from "lucide-react";
 
 const userData = JSON.parse(localStorage.getItem("userData"));
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const OverviewPage = () => {
 

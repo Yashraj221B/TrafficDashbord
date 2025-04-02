@@ -23,7 +23,7 @@ import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 import { capitalize } from "@mui/material";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const statusOptions = [
   { value: "Pending", label: "Pending" },

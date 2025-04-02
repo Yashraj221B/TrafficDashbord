@@ -17,7 +17,7 @@ import axios from "axios";
 
 import Header from "../components/common/Header";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const EmailRecordsPage = () => {
   const [departmentEmail, setDepartmentEmail] = useState("");

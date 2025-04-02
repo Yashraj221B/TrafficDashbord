@@ -7,7 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import UserEdit from "../components/userManagement/userEdit";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // API ENDPOINT = http://localhost:3000/api/users/current-officer/
 

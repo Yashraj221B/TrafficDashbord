@@ -13,7 +13,7 @@ const Sidebar = () => {
   useEffect(() => {
     // Make the API call inside useEffect
     axios
-      .get(`${import.meta.env.VITE_Backend_URL || 'http://localhost:3000'}/api/auth/me`)
+      .get(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth/me`)
       .then((response) => {
         if (response.data.success) {
           if (response.data.user.role === "main_admin") {

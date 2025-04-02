@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:3000';
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const response = await axios.post(`${backendUrl}/api/auth/login`, { username, password });
       
       if (response.data.success) {

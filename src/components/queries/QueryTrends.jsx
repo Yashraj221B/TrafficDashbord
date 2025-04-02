@@ -17,7 +17,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
 let divisionId = "NOT_SPECIFIED";
 let divisionName = "NOT_SPECIFIED";
 
-const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 if(userData && userData.role == "division_admin"){
   divisionId = userData.divisionId;
