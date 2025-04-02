@@ -11,17 +11,22 @@ import {
 import { motion } from "framer-motion";
 import Themes, { getCurrentTheme } from "../../assets/Themes";
 
-const QueryTypeDistribution = ({ stats }) => {
+const QueryTypeDistribution = ({ stats, division_admin=true}) => {
   // Transform stats object into array format for Recharts
   const data = [
     { name: "Traffic Violation", value: stats?.trafficViolation || 0 },
     { name: "Traffic Congestion", value: stats?.trafficCongestion || 0 },
     { name: "Accident", value: stats?.accident || 0 },
-    { name: "Road Damage", value: stats?.roadDamage || 0 },
+    // { name: "Road Damage", value: stats?.roadDamage || 0 },
     { name: "Illegal Parking", value: stats?.illegalParking || 0 },
-    { name: "Suggestion", value: stats?.suggestion || 0 },
+    // { name: "Suggestion", value: stats?.suggestion || 0 },
     { name: "General Report", value: stats?.generalReport || 0 },
   ];
+
+  if(!division_admin){
+    data.push({ name: "Road Damage", value: stats?.roadDamage || 0 });
+    data.push({ name: "Suggestion", value: stats?.suggestion || 0 });
+  }
 
   return (
     <motion.div
