@@ -1,4 +1,4 @@
-import { BarChart2, Menu, Settings, Users } from "lucide-react";
+import { BarChart2, Mail, Menu, Settings, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -61,6 +61,14 @@ const Sidebar = () => {
         href: "/usermanagement",
       });
     }
+
+    // EmailRecords Page
+    items.push({
+      name: "Email Records",
+      icon: Mail,
+      color: "#10B981",
+      href: "/emailRecords",
+    });
 
     // Everyone gets access to settings
     items.push({

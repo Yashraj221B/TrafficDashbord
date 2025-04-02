@@ -18,6 +18,7 @@ import UserManagementPage from "./pages/UserManagementPage";
 import AdminOverviewPage from "./pages/AdminOverviewPage";
 import QueryManagementPage from "./pages/QueryManagementPage";
 import VolunteerManagementPage from "./pages/VolunteerManagementPage";
+import EmailRecordsPage from "./pages/EmailRecordsPage";
 
 // Admin-only route component
 const AdminRoute = ({ children }) => {
@@ -168,6 +169,17 @@ function App() {
                   <Backdrop />
                   <Sidebar />
                   <QueryManagementPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/emailRecords"
+              element={
+                <ProtectedRoute>
+                  <Backdrop />
+                  <Sidebar />
+                  <EmailRecordsPage/>
                 </ProtectedRoute>
               }
             />
