@@ -756,7 +756,7 @@ const AdminQueryManagementPage = () => {
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           <QueryStatusChart stats={filteredStats.byStatus} />
-          <QueryTypeDistribution stats={filteredStats.byType} />
+          <QueryTypeDistribution stats={filteredStats.byType} division_admin={false}/>
           <QueryTrends
             className="lg:col-span-2"
             timelineActive={timelineActive}

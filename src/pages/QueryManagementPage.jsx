@@ -631,7 +631,7 @@ const QueryManagementPage = () => {
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           <QueryStatusChart stats={filteredStats.byStatus} />
-          <QueryTypeDistribution stats={filteredStats.byType} />
+          <QueryTypeDistribution stats={filteredStats.byType} division_admin={true}/>
           <QueryTrends
             className="lg:col-span-2"
             timelineActive={timelineActive}
@@ -725,12 +725,6 @@ const QueryManagementPage = () => {
                     value="Illegal Parking"
                   >
                     Illegal Parking
-                  </option>
-                  <option
-                    className="bg-primary hover:bg-hovPrimary"
-                    value="Suggestion"
-                  >
-                    Suggestion
                   </option>
                   <option
                     className="bg-primary hover:bg-hovPrimary"
