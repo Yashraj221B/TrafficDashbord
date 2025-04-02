@@ -21,6 +21,7 @@ import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 import { capitalize } from "@mui/material";
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
 
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id:"67dac1a2a771ed87f82890b2"},
@@ -129,7 +130,7 @@ const QueryManagementPage = () => {
   const fetchQueryStats = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/division/${divisionId}/stats`
+        `${backendUrl}/api/queries/division/${divisionId}/stats`
       );
       if (response.data.success) {
         setQueryStats(response.data.stats);
@@ -209,7 +210,7 @@ const QueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&division=${divisionId}`;
+      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20&division=${divisionId}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -240,7 +241,7 @@ const QueryManagementPage = () => {
   const fetchQueryDetails = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/queries/${id}`
+        `${backendUrl}/api/queries/${id}`
       );
       if (response.data.success) {
         setDetailsData(response.data.data);
@@ -253,7 +254,7 @@ const QueryManagementPage = () => {
 
   const updateQueryStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:3000/api/queries/${id}/status`, {
+      await axios.put(`${backendUrl}/api/queries/${id}/status`, {
         status: newStatus,
       });
 
@@ -284,11 +285,11 @@ const QueryManagementPage = () => {
       const queryId = selectedQueryForEmail._id || selectedQueryForEmail.id;
 
       console.log(
-        `Making request to: http://localhost:3000/api/queries/${queryId}/notify-department`
+        `Making request to: ${backendUrl}/api/queries/${queryId}/notify-department`
       );
 
       const response = await axios.post(
-        `http://localhost:3000/api/queries/${queryId}/notify-department`,
+        `${backendUrl}/api/queries/${queryId}/notify-department`,
         {
           email: departmentEmail,
           departmentName: departmentName,
@@ -356,7 +357,7 @@ const QueryManagementPage = () => {
       );
 
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
+        `${backendUrl}/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -450,7 +451,7 @@ const QueryManagementPage = () => {
         } else {
           // For larger datasets, make a dedicated API call to get all matching data (not just current page)
           // We'll construct a URL similar to fetchQueries but without pagination limits
-          let url = `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`;
+          let url = `${backendUrl}/api/queries?limit=1000&division=${divisionId}`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -466,7 +467,7 @@ const QueryManagementPage = () => {
 
           if (timelineActive && startDate && endDate) {
             // Use timeline endpoint instead
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}`;
+            url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}`;
           }
 
           const response = await axios.get(url);
@@ -478,7 +479,7 @@ const QueryManagementPage = () => {
         // If no filters, we might want all data, but that could be a lot
         // Let's limit to 1000 most recent entries to avoid browser issues
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000&division=${divisionId}`
+          `${backendUrl}/api/queries?limit=1000&division=${divisionId}`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;

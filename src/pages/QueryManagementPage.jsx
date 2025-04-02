@@ -35,7 +35,11 @@ const statusOptions = [
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },
   { value: "CHAKAN", label: "Chakan", id: "67dc019a6532e1c784d60840" },
-  { value: "DIGHI ALANDI", label: "Dighi-Alandi", id: "67db077dfa28812fe4f9573f" },
+  {
+    value: "DIGHI ALANDI",
+    label: "Dighi-Alandi",
+    id: "67db077dfa28812fe4f9573f",
+  },
   { value: "BHOSARI", label: "Bhosari", id: "67dc19f0a9ae16de2619b735" },
   { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
   { value: "PIMPRI", label: "Pimpri", id: "67dc18f0a9ae16de2619b72c" },
@@ -67,6 +71,8 @@ const QueryManagementPage = () => {
   const [departmentName, setDepartmentName] = useState("");
   const [emailSending, setEmailSending] = useState(false);
   const [isAggregate, setIsAggregate] = useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [departments, setDepartments] = useState([]);
 
   const [queryStats, setQueryStats] = useState({
     byStatus: { pending: 0, inProgress: 0, resolved: 0, rejected: 0 },
@@ -119,7 +125,8 @@ const QueryManagementPage = () => {
 
   // Speech recognition initialization
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
@@ -160,14 +167,33 @@ const QueryManagementPage = () => {
 
   useEffect(() => {
     fetchQueryStats();
+    fetchDepartments();
     if (!timelineActive) {
       fetchQueries();
     }
-  }, [currentPage, searchTerm, selectedType, selectedStatus, timelineActive, isAggregate]);
+  }, [
+    currentPage,
+    searchTerm,
+    selectedType,
+    selectedStatus,
+    timelineActive,
+    isAggregate,
+  ]);
 
   useEffect(() => {
     calculateFilteredStats();
   }, [queries]);
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/departments`);
+      if (response.data.success) {
+        setDepartments(response.data.departments);
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
 
   const fetchQueryStats = async () => {
     try {
@@ -315,7 +341,7 @@ const QueryManagementPage = () => {
       const response = await axios.post(
         `${backendUrl}/api/queries/${queryId}/notify-department`,
         {
-          email: departmentEmail,
+          emails: departmentEmail,
           departmentName: departmentName,
         }
       );
@@ -407,6 +433,21 @@ const QueryManagementPage = () => {
     return date.toLocaleString();
   };
 
+  const handleDepartmentChange = (e) => {
+    const selectedOption = e.target.value;
+    const selectedDepartment = departments.find(
+      (dept) => dept.name === selectedOption
+    );
+    if (selectedDepartment) {
+      setDepartmentEmail(selectedDepartment.emails);
+      setDepartmentName(selectedDepartment.name);
+    } else {
+      setDepartmentEmail("");
+      setDepartmentName("");
+    }
+    setSelectedDepartment(selectedOption);
+  };
+
   const getBadgeColor = (status) => {
     switch (status) {
       case "Pending":
@@ -485,15 +526,20 @@ const QueryManagementPage = () => {
       formData.append("resolution_note", message);
       if (image) formData.append("image", image);
 
-      const response = await fetch(`${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(responseData.message || `HTTP error! Status: ${response.status}`);
+        throw new Error(
+          responseData.message || `HTTP error! Status: ${response.status}`
+        );
       }
 
       if (responseData.success) {
@@ -526,8 +572,10 @@ const QueryManagementPage = () => {
         } else {
           let url = `${backendUrl}/api/queries?limit=1000&division=${divisionId}&aggregate=${isAggregate}`;
           if (searchTerm) url += `&search=${searchTerm}`;
-          if (selectedType && selectedType !== "all") url += `&query_type=${selectedType}`;
-          if (selectedStatus && selectedStatus !== "all") url += `&status=${selectedStatus}`;
+          if (selectedType && selectedType !== "all")
+            url += `&query_type=${selectedType}`;
+          if (selectedStatus && selectedStatus !== "all")
+            url += `&status=${selectedStatus}`;
           if (timelineActive && startDate && endDate) {
             url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&division=${divisionId}&aggregate=${isAggregate}`;
           }
@@ -564,7 +612,8 @@ const QueryManagementPage = () => {
       const dateStr = now.toISOString().split("T")[0];
       let fileName = `traffic-buddy-queries-${dateStr}.xlsx`;
       if (selectedType) fileName = `${selectedType.toLowerCase()}-${fileName}`;
-      if (selectedStatus) fileName = `${selectedStatus.toLowerCase()}-${fileName}`;
+      if (selectedStatus)
+        fileName = `${selectedStatus.toLowerCase()}-${fileName}`;
       if (timelineActive) fileName = `timeline-${fileName}`;
 
       XLSX.writeFile(workbook, fileName);
@@ -1030,7 +1079,9 @@ const QueryManagementPage = () => {
                   <h3 className="text-sm font-medium text-gray-400">
                     Location Address:
                   </h3>
-                  <p className="text-gray-200">{detailsData.location.address}</p>
+                  <p className="text-gray-200">
+                    {detailsData.location.address}
+                  </p>
                   <button
                     className="mt-2 flex items-center text-blue-400 hover:text-blue-300"
                     onClick={() =>
@@ -1049,7 +1100,9 @@ const QueryManagementPage = () => {
                     <h3 className="text-sm font-medium text-gray-400">
                       Resolution Notes:
                     </h3>
-                    <p className="text-gray-200">{detailsData.resolution_note}</p>
+                    <p className="text-gray-200">
+                      {detailsData.resolution_note}
+                    </p>
                     {detailsData.resolved_at && (
                       <p className="text-sm text-gray-400 mt-1">
                         Resolved on: {formatDate(detailsData.resolved_at)}
@@ -1064,11 +1117,20 @@ const QueryManagementPage = () => {
                     onClick={() => {
                       if (detailsSelectedStatus === "Resolved") {
                         openResolveModal(detailsData);
-                      } else if (detailsSelectedStatus && detailsSelectedStatus !== detailsData.status) {
-                        updateQueryStatus(detailsData._id, detailsSelectedStatus);
+                      } else if (
+                        detailsSelectedStatus &&
+                        detailsSelectedStatus !== detailsData.status
+                      ) {
+                        updateQueryStatus(
+                          detailsData._id,
+                          detailsSelectedStatus
+                        );
                       }
                     }}
-                    disabled={!detailsSelectedStatus || detailsSelectedStatus === detailsData.status}
+                    disabled={
+                      !detailsSelectedStatus ||
+                      detailsSelectedStatus === detailsData.status
+                    }
                   >
                     Apply Changes
                   </button>
@@ -1114,14 +1176,44 @@ const QueryManagementPage = () => {
                   </p>
                 </div>
 
+                {/* Department Dropdown */}
+                <select
+                  value={selectedDepartment}
+                  onChange={handleDepartmentChange}
+                  className="bg-primary text-tBase my-4 w-full rounded-lg border-2 border-borderPrimary px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                >
+                  <option
+                    disabled
+                    className="bg-primary hover:bg-hovPrimary"
+                    value=""
+                  >
+                    Select Department
+                  </option>
+                  {departments.map((department) => (
+                    <option
+                      className="bg-primary hover:bg-hovPrimary"
+                      key={department.name}
+                      value={department.name}
+                    >
+                      {department.name}
+                    </option>
+                  ))}
+                  <option
+                    className="bg-primary hover:bg-hovPrimary"
+                    value="Other"
+                  >
+                    Other
+                  </option>
+                </select>
+
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-400 mb-1">
                     Department Name:
                   </label>
                   <input
                     type="text"
-                    className="bg-bgSecondary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
-                    placeholder="e.g. Traffic Police Department"
+                    className="bg-primary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="Traffic Police Department"
                     value={departmentName}
                     onChange={(e) => setDepartmentName(e.target.value)}
                   />
@@ -1133,8 +1225,8 @@ const QueryManagementPage = () => {
                   </label>
                   <input
                     type="email"
-                    className="bg-bgSecondary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
-                    placeholder="department@example.com"
+                    className="bg-primary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="department1@email.com;department2@email.com"
                     value={departmentEmail}
                     onChange={(e) => setDepartmentEmail(e.target.value)}
                   />
@@ -1178,7 +1270,9 @@ const QueryManagementPage = () => {
               exit={{ opacity: 0, scale: 0.9 }}
             >
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold text-tBase">Resolve Query</h2>
+                <h2 className="text-xl font-semibold text-tBase">
+                  Resolve Query
+                </h2>
                 <button
                   className="text-gray-400 hover:text-tBase"
                   onClick={() => {
@@ -1191,8 +1285,12 @@ const QueryManagementPage = () => {
               </div>
 
               <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-tBase">Submit Resolution</h3>
-                <p className="text-sm text-gray-400">Provide details to mark this query as resolved</p>
+                <h3 className="text-lg font-medium text-tBase">
+                  Submit Resolution
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Provide details to mark this query as resolved
+                </p>
               </div>
 
               <form className="space-y-6" onSubmit={handleResolveSubmit}>
@@ -1343,7 +1441,8 @@ const QueryManagementPage = () => {
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-400">
-                  Traffic Buddy Administration Portal © {new Date().getFullYear()}
+                  Traffic Buddy Administration Portal ©{" "}
+                  {new Date().getFullYear()}
                 </p>
               </div>
             </motion.div>

@@ -22,10 +22,16 @@ import QueryStatusChart from "../components/queries/QueryStatusChart";
 import QueryTypeDistribution from "../components/queries/QueryTypeDistribution";
 import QueryTrends from "../components/queries/QueryTrends";
 
+const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:3000";
+
 const divisions = [
   { value: "MAHALUNGE", label: "Mahalunge", id: "67dac1a2a771ed87f82890b2" },
   { value: "CHAKAN", label: "Chakan", id: "67dc019a6532e1c784d60840" },
-  { value: "DIGHI ALANDI", label: "Dighi-Alandi", id: "67db077dfa28812fe4f9573f" },
+  {
+    value: "DIGHI ALANDI",
+    label: "Dighi-Alandi",
+    id: "67db077dfa28812fe4f9573f",
+  },
   { value: "BHOSARI", label: "Bhosari", id: "67dc19f0a9ae16de2619b735" },
   { value: "TALWADE", label: "Talwade", id: "67dac59365aca82fe28bb003" },
   { value: "PIMPRI", label: "Pimpri", id: "67dc18f0a9ae16de2619b72c" },
@@ -56,6 +62,8 @@ const AdminQueryManagementPage = () => {
   const [departmentName, setDepartmentName] = useState("");
   const [emailSending, setEmailSending] = useState(false);
   const [isAggregate, setIsAggregate] = useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [departments, setDepartments] = useState([]);
 
   // Original query stats (all data)
   const [queryStats, setQueryStats] = useState({
@@ -123,21 +131,39 @@ const AdminQueryManagementPage = () => {
 
   useEffect(() => {
     fetchQueryStats();
+    fetchDepartments();
     if (!timelineActive) {
       fetchQueries();
     }
-  }, [currentPage, searchTerm, selectedType, selectedStatus, selectedDivision, timelineActive, isAggregate]);
+  }, [
+    currentPage,
+    searchTerm,
+    selectedType,
+    selectedStatus,
+    selectedDivision,
+    timelineActive,
+    isAggregate,
+  ]);
 
   // Update filtered stats whenever queries change
   useEffect(() => {
     calculateFilteredStats();
   }, [queries]);
 
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/departments`);
+      if (response.data.success) {
+        setDepartments(response.data.departments);
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
+
   const fetchQueryStats = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/queries/statistics`
-      );
+      const response = await axios.get(`${backendUrl}/api/queries/statistics`);
       if (response.data.success) {
         setQueryStats(response.data.stats);
         if (
@@ -211,7 +237,7 @@ const AdminQueryManagementPage = () => {
   const fetchQueries = async () => {
     setLoading(true);
     try {
-      let url = `http://localhost:3000/api/queries?page=${currentPage}&limit=20&aggregate=${isAggregate}`;
+      let url = `${backendUrl}/api/queries?page=${currentPage}&limit=20&aggregate=${isAggregate}`;
 
       if (searchTerm) {
         url += `&search=${searchTerm}`;
@@ -226,7 +252,8 @@ const AdminQueryManagementPage = () => {
       }
 
       if (selectedDivision) {
-        const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
+        const divisionId =
+          divisions.find((d) => d.value === selectedDivision)?.id || "";
         url += `&division=${divisionId}`;
       }
 
@@ -246,9 +273,7 @@ const AdminQueryManagementPage = () => {
 
   const fetchQueryDetails = async (id) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/queries/${id}`
-      );
+      const response = await axios.get(`${backendUrl}/api/queries/${id}`);
       if (response.data.success) {
         setDetailsData(response.data.data);
         setViewDetailsId(id);
@@ -261,7 +286,7 @@ const AdminQueryManagementPage = () => {
 
   const updateQueryStatus = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:3000/api/queries/${id}/status`, {
+      await axios.put(`${backendUrl}/api/queries/${id}/status`, {
         status: newStatus,
       });
 
@@ -289,13 +314,13 @@ const AdminQueryManagementPage = () => {
       const queryId = selectedQueryForEmail._id || selectedQueryForEmail.id;
 
       console.log(
-        `Making request to: http://localhost:3000/api/queries/${queryId}/notify-department`
+        `Making request to: ${backendUrl}/api/queries/${queryId}/notify-department`
       );
 
       const response = await axios.post(
-        `http://localhost:3000/api/queries/${queryId}/notify-department`,
+        `${backendUrl}/api/queries/${queryId}/notify-department`,
         {
-          email: departmentEmail,
+          emails: departmentEmail,
           departmentName: departmentName,
         }
       );
@@ -350,15 +375,16 @@ const AdminQueryManagementPage = () => {
 
       const formattedStartDate = startDate;
       const formattedEndDate = endDate;
-      
-      const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
+
+      const divisionId =
+        divisions.find((d) => d.value === selectedDivision)?.id || "";
 
       console.log(
         `Sending timeline request with dates: ${formattedStartDate}, ${formattedEndDate}, division ID: ${divisionId}`
       );
 
       const response = await axios.get(
-        `http://localhost:3000/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
+        `${backendUrl}/api/queries/time-filter?start=${formattedStartDate}&end=${formattedEndDate}&division=${divisionId}`
       );
 
       if (response.data.success) {
@@ -422,6 +448,21 @@ const AdminQueryManagementPage = () => {
     setCurrentPage(1);
   };
 
+  const handleDepartmentChange = (e) => {
+    const selectedOption = e.target.value;
+    const selectedDepartment = departments.find(
+      (dept) => dept.name === selectedOption
+    );
+    if (selectedDepartment) {
+      setDepartmentEmail(selectedDepartment.emails);
+      setDepartmentName(selectedDepartment.name);
+    } else {
+      setDepartmentEmail("");
+      setDepartmentName("");
+    }
+    setSelectedDepartment(selectedOption);
+  };
+
   const getBadgeColor = (status) => {
     switch (status) {
       case "Pending":
@@ -449,11 +490,17 @@ const AdminQueryManagementPage = () => {
     try {
       let dataToDownload = [];
 
-      if (searchTerm || selectedType || selectedStatus || selectedDivision || timelineActive) {
+      if (
+        searchTerm ||
+        selectedType ||
+        selectedStatus ||
+        selectedDivision ||
+        timelineActive
+      ) {
         if (queries.length < 100) {
           dataToDownload = queries;
         } else {
-          let url = `http://localhost:3000/api/queries?limit=1000?aggregate=${isAggregate}`;
+          let url = `${backendUrl}/api/queries?limit=1000?aggregate=${isAggregate}`;
 
           if (searchTerm) {
             url += `&search=${searchTerm}`;
@@ -468,14 +515,16 @@ const AdminQueryManagementPage = () => {
           }
 
           if (selectedDivision) {
-            const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
+            const divisionId =
+              divisions.find((d) => d.value === selectedDivision)?.id || "";
             url += `&division=${divisionId}`;
           }
 
           if (timelineActive && startDate && endDate) {
-            url = `http://localhost:3000/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&aggregate=${isAggregate}`;
+            url = `${backendUrl}/api/queries/timeline?start=${startDate}T00:00:00.000Z&end=${endDate}T23:59:59.999Z&limit=1000&aggregate=${isAggregate}`;
             if (selectedDivision) {
-              const divisionId = divisions.find((d) => d.value === selectedDivision)?.id || "";
+              const divisionId =
+                divisions.find((d) => d.value === selectedDivision)?.id || "";
               url += `&division=${divisionId}`;
             }
           }
@@ -487,7 +536,7 @@ const AdminQueryManagementPage = () => {
         }
       } else {
         const response = await axios.get(
-          `http://localhost:3000/api/queries?limit=1000&aggregate=${isAggregate}`
+          `${backendUrl}/api/queries?limit=1000&aggregate=${isAggregate}`
         );
         if (response.data.success) {
           dataToDownload = response.data.data;
@@ -549,7 +598,8 @@ const AdminQueryManagementPage = () => {
 
   // Voice-to-Text Functionality
   const startListening = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       setError("Speech recognition is not supported in this browser.");
       return;
@@ -625,16 +675,22 @@ const AdminQueryManagementPage = () => {
       formData.append("resolution_note", message);
       if (image) formData.append("image", image);
 
-      console.log("Submitting to:", `http://localhost:3000/api/reports/${selectedQueryForResolve._id}/resolve`);
+      console.log(
+        "Submitting to:",
+        `${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`
+      );
       console.log("FormData contents:");
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
 
-      const response = await fetch(`http://localhost:3000/api/reports/${selectedQueryForResolve._id}/resolve`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${backendUrl}/api/reports/${selectedQueryForResolve._id}/resolve`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const responseText = await response.text();
       console.log("Raw response:", responseText);
@@ -644,12 +700,17 @@ const AdminQueryManagementPage = () => {
         responseData = JSON.parse(responseText);
       } catch (jsonError) {
         throw new Error(
-          `Server response is not valid JSON: ${responseText.substring(0, 100)}...`
+          `Server response is not valid JSON: ${responseText.substring(
+            0,
+            100
+          )}...`
         );
       }
 
       if (!response.ok) {
-        throw new Error(responseData.message || `HTTP error! Status: ${response.status}`);
+        throw new Error(
+          responseData.message || `HTTP error! Status: ${response.status}`
+        );
       }
 
       if (responseData.success) {
@@ -680,7 +741,10 @@ const AdminQueryManagementPage = () => {
 
     if (detailsSelectedStatus === "Resolved") {
       openResolveModal(detailsData);
-    } else if (detailsSelectedStatus && detailsSelectedStatus !== detailsData.status) {
+    } else if (
+      detailsSelectedStatus &&
+      detailsSelectedStatus !== detailsData.status
+    ) {
       updateQueryStatus(detailsData._id, detailsSelectedStatus);
     }
   };
@@ -1280,7 +1344,10 @@ const AdminQueryManagementPage = () => {
                   <button
                     className="bg-blue-600 hover:bg-blue-700 text-tBase px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={applyAction}
-                    disabled={!detailsSelectedStatus || detailsSelectedStatus === detailsData.status}
+                    disabled={
+                      !detailsSelectedStatus ||
+                      detailsSelectedStatus === detailsData.status
+                    }
                   >
                     Apply Change
                   </button>
@@ -1326,14 +1393,44 @@ const AdminQueryManagementPage = () => {
                   </p>
                 </div>
 
+                {/* Department Dropdown */}
+                <select
+                  value={selectedDepartment}
+                  onChange={handleDepartmentChange}
+                  className="bg-primary text-tBase my-4 w-full rounded-lg border-2 border-borderPrimary px-3 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                >
+                  <option
+                    disabled
+                    className="bg-primary hover:bg-hovPrimary"
+                    value=""
+                  >
+                    Select Department
+                  </option>
+                  {departments.map((department) => (
+                    <option
+                      className="bg-primary hover:bg-hovPrimary"
+                      key={department.name}
+                      value={department.name}
+                    >
+                      {department.name}
+                    </option>
+                  ))}
+                  <option
+                    className="bg-primary hover:bg-hovPrimary"
+                    value="Other"
+                  >
+                    Other
+                  </option>
+                </select>
+
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-400 mb-1">
                     Department Name:
                   </label>
                   <input
                     type="text"
-                    className="bg-bgSecondary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
-                    placeholder="e.g. Traffic Police Department"
+                    className="bg-primary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="Traffic Police Department"
                     value={departmentName}
                     onChange={(e) => setDepartmentName(e.target.value)}
                   />
@@ -1345,8 +1442,8 @@ const AdminQueryManagementPage = () => {
                   </label>
                   <input
                     type="email"
-                    className="bg-bgSecondary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
-                    placeholder="department@example.com"
+                    className="bg-primary text-tBase placeholder-gray-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="department1@email.com;department2@email.com"
                     value={departmentEmail}
                     onChange={(e) => setDepartmentEmail(e.target.value)}
                   />
@@ -1391,7 +1488,9 @@ const AdminQueryManagementPage = () => {
               exit={{ opacity: 0, scale: 0.9 }}
             >
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold text-tBase">Resolve Query</h2>
+                <h2 className="text-xl font-semibold text-tBase">
+                  Resolve Query
+                </h2>
                 <button
                   className="text-gray-400 hover:text-tBase"
                   onClick={() => {
@@ -1404,8 +1503,12 @@ const AdminQueryManagementPage = () => {
               </div>
 
               <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-tBase">Submit Resolution</h3>
-                <p className="text-sm text-gray-400">Provide details to mark this query as resolved</p>
+                <h3 className="text-lg font-medium text-tBase">
+                  Submit Resolution
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Provide details to mark this query as resolved
+                </p>
               </div>
 
               <form className="space-y-6" onSubmit={handleResolveSubmit}>
@@ -1556,7 +1659,8 @@ const AdminQueryManagementPage = () => {
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-400">
-                  Traffic Buddy Administration Portal © {new Date().getFullYear()}
+                  Traffic Buddy Administration Portal ©{" "}
+                  {new Date().getFullYear()}
                 </p>
               </div>
             </motion.div>
