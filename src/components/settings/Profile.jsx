@@ -14,14 +14,14 @@ const Profile = () => {
 
 				<div>
 					<h3 className='text-lg font-semibold text-tBase'>{localStorage.getItem('username')}</h3>
-					<p className='text-tSecondary'>john.doe@example.com</p>
+					<p className='text-tSecondary'></p>
 				</div>
 			</div>
 
 <div className="flex flex-row gap-3">
-			<button className='bg-secondary hover:bg-hovSecondary text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
+			{/* <button className='bg-secondary hover:bg-hovSecondary text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
 				Edit Profile
-			</button>
+			</button> */}
 			<button onClick={() => {authService.logout();window.location.reload()}} className='bg-red-600 hover:bg-red-700 text-tBase font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto'>
 				LogOut
 			</button>
